@@ -1,0 +1,13 @@
+{
+  "name": "speakly",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "autogitdeploy": "git add . && git commit -m \"updated\" && git push origin main"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
