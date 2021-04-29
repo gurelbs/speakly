@@ -1,1 +1,2 @@
-# wellcome to speakly
+# wellcome to speakly.
+> Free Virtual Assistant App
