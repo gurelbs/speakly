@@ -72,7 +72,7 @@ export default function Recognition () {
         <p>interim Transcript: {interim}</p>
         <p>final Transcript: {final}</p>
         <div>
-            <button onClick={() => handleReco()}>{toggleBtn ? 'stop' : 'start'}</button>
+            <button onClick={() => handleReco()}>{'start' || !toggleBtn ? 'start' : 'stop'}</button>
         </div>
         <button onClick={() => fetchData(transcript)}>speak</button>
         <button onClick={clear}>clear</button>
