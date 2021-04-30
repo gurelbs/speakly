@@ -3,7 +3,7 @@ const cmd = require('./router/cmd')
 const app = express()
 const cors = require('cors')
 const { json } = require('express')
-
+const path = require('path')
 app.use(cors())
 app.use(express.json())
 app.use(cmd)
