@@ -1,12 +1,13 @@
 const puppeteer = require('puppeteer');
 const RENDER_CATCH = new Map()
-const googleAnswer = async term => {
+const googleAnswer = async (term, lang) => {
         const url = `https://google.com/search?q=${term}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         const browser = await puppeteer.launch();
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
-        await page.goto(url, {waitUntil: 'domcontentloaded'});
+        // await page.goto(url, {waitUntil: 'domcontentloaded'});
+        await page.goto(url);
         // const rso = await page.waitForSelector('#rso')
         // const g = await page.waitForSelector('.g')
         // const calc = await page.waitForSelector('#cwos')
@@ -14,8 +15,22 @@ const googleAnswer = async term => {
         // const directAnswer = await page.waitForSelector('#rso div')
         // const wiki = await page.waitForSelector('#kp-wp-tab-overview div span')
         let res;
-        if (await page.$('#knowledge-currency__updatable-data-column > div')) { 
-            console.log('found'); 
+        console.log(lang);
+        // if (await page.$("#cwos")) {
+        //     res = await page.evaluate(() => document.querySelector("#cwos").innerText)
+        // } else
+        if (await page.$('.xpdopen > div')) {
+            res = await page.evaluate(() => document.querySelector(".xpdopen > div").innerText
+                .split('\n')
+                .splice(0,2)
+                .join(' ')
+                .replace('ק״מ','קילומטר')
+                .replace('קמ\"ר','קילומטר רבוע')
+                .replace(/\([^)]*\)/g,'')
+                .replace('/',': '))
+        } else if (await page.$('#kp-wp-tab-overview > div span')) {
+            res = await page.evaluate(() => document.querySelector('#kp-wp-tab-overview div span').innerText)
+        } else if (await page.$('#knowledge-currency__updatable-data-column > div')) { 
             res = await page.evaluate(() => document
                 .querySelector('#knowledge-currency__updatable-data-column > div').innerText
                 .split('\n')
@@ -23,14 +38,17 @@ const googleAnswer = async term => {
                 .replace('שווה','שָׁוֶה')
                 .replace('ביטקוין','בִּיטְקוֹיִיְן'))
         } else if (await page.$('#tw-container #tw-target-text')) {
-            console.log('should translate');
+            res = await page.evaluate(() => document.querySelector('#tw-container #tw-target-text').innerText)
+            lang = await page.evaluate(() => document.querySelector("#tw-container #tw-target-text span").getAttribute('lang'))
+        } else if (await page.$("#rhs a > div")){
+            res = await page.evaluate(() => document.querySelector("#rhs a > div").innerText.split('\n').splice(0,1).join(''))
         } else {
             console.log('no found');
             res = `לא מצאתי מידע על ${term}`
         }
         await context.close(); 
-        RENDER_CATCH.set(url, res)
-        return res
+        RENDER_CATCH.set(url, {res,lang})
+        return { res, lang }
 }
 
 module.exports = googleAnswer
@@ -81,3 +99,12 @@ module.exports = googleAnswer
 // })
 // await browser.close();
 // return allResult ? allResult : `לא מצאתי מידע על ${term}`
+
+// const browser = await puppeteer.launch();
+// const page = await browser.newPage();
+// await page.goto('https://www.youtube.com/results?search_query=crazy',{waitUntil: 'domcontentloaded'})
+// if (await page.$('#contents > ytd-video-renderer a')) {
+// return await page.click('#contents > ytd-video-renderer a')
+// }
+// await browser.close();
+

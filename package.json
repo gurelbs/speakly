@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "autogitdeploy": "git add . && git commit -m \"updated\" && git push origin main",
+    "autoherokudeploy": "npm run autogitdeploy && git push heroku main",
     "start-client": "cd client && npm start",
     "dev": "concurrently \"nodemon index\" \"cd client && npm start\"",
     "start": "node index.js",

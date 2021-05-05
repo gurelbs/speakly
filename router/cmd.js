@@ -4,15 +4,10 @@ const googleAnswer = require('./../utils/googleAnswer')
 const tts = require('./../voice-rss-tts/index.js');
 
 const router = new express.Router()
-let answer;
 router.post('/api/cmd', async (req, res) => {   
     const data = req.body
-    const termStartWith = x => data.txt.startsWith(x)
-    const what = termStartWith('מה')
-    const how = termStartWith('איך')
-    const howMuch = termStartWith('כמה')
-    const who = termStartWith('מי')
-    answer = await googleAnswer(data.txt)
+    const {txt,lang} = data
+    const answer = await googleAnswer(txt,lang)
     console.log(answer)
     try {
         tts.speech({
@@ -25,7 +20,10 @@ router.post('/api/cmd', async (req, res) => {
             ssml: false,
             b64: false,
             callback(err, content) {
-                res.status(201).end(content || err)
+                const decoded = String.fromCharCode(...new Uint8Array(content));
+                res.status(201)
+                .send({decoded, answer} || err)
+                .end()
             }
         })
     } catch (err) {
@@ -34,3 +32,10 @@ router.post('/api/cmd', async (req, res) => {
 })
 
 module.exports = router
+
+
+// const termStartWith = x => data.txt.startsWith(x)
+// const what = termStartWith('מה')
+// const how = termStartWith('איך')
+// const howMuch = termStartWith('כמה')
+// const who = termStartWith('מי')
