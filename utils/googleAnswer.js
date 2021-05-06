@@ -10,7 +10,7 @@ const googleAnswer = async (term, lang) => {
         let res;
         let foundElement;
         try {
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 100});
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 5000});
         } catch (error) {
             console.log(error);
         }

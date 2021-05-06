@@ -1,19 +1,16 @@
 import React,{useEffect, useState} from 'react'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import { googleSearch, wikiSearch, youtubeSearch } from './Commands/Commends'
 import api from './api/api'
 import Languages from './Languages'
 import allLanguagesList from './languagesList'
 import Spinner from './Spinner'
-import {
-    googleSearch,
-    wikiSearch,
-    // playRadio,
-    youtubeSearch
-} from './Commands/Commends'
+import toArrayBuffer from './utils'
 
-export default function Recognition () {
+const Recognition =  () => {
     const [currentLanguages, setCurrentLanguages] = useState('')
     const [textData, setTextData] = useState({})
+    const [arrayBufferData, setArrayBufferData] = useState(null)
     const [textAnswer, setTextAnswer] = useState(null)
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
@@ -36,33 +33,25 @@ export default function Recognition () {
         try {
             setIsLoading(true)
             const userData = await api.post('/cmd', { txt: txt, lang: ('he-il' || currentLanguages)})
-            setIsLoading(false)
             const {answer,content} = userData.data
-            setTextAnswer(answer.res);
-            let play = async () => {
-                try {
-                    const audio = new (window.AudioContext || window.webkitAudioContext)()
-                    const toArrayBuffer = buffer => {
-                        const ab = new ArrayBuffer(buffer.length);
-                        const view = new Uint8Array(ab);
-                        buffer.map(i => view[i] = buffer[i])
-                        return ab;
-                    }
-                    const arrayBuffer = toArrayBuffer(content.data)
-                    const audioBuffer = await audio.decodeAudioData(arrayBuffer);
-                    console.log(audioBuffer);
-                    const source = audio.createBufferSource();
-                    source.buffer = audioBuffer;
-                    source.connect(audio.destination);
-                    source.start();
-                } catch (error) {
-                    console.log(error);
-                }
-                }
-            return await play()
-        } catch (error) {
-            console.log(error);
+            const ab = toArrayBuffer(content.data)
             setIsLoading(false)
+            setTextAnswer(answer.res);
+            setArrayBufferData(ab)
+            const audio = new (window.AudioContext || window.webkitAudioContext)()
+            const buffer = await audio.createBuffer(2, arrayBufferData.byteLength, 44000);
+            const source = audio.createBufferSource();
+            source.buffer = buffer
+            source.connect(audio.destination);
+            console.log(audio.state);
+            if (audio.state === 'suspended') {
+                return audio.resume();
+            }
+            return source.start()
+        } catch (e) {
+            console.log(e);
+            setIsLoading(false)
+            setTextAnswer(e.message);
         }
     }
     useEffect(() => {
@@ -144,6 +133,7 @@ export default function Recognition () {
     }, [interimTranscript])
   return (
       <div>
+          {console.log(arrayBufferData)}
         <p>Transcript: {text}</p>
         <p>interim Transcript: {interim}</p>
         <p>final Transcript: {final}</p>
@@ -162,3 +152,5 @@ export default function Recognition () {
       </div>
   )
 }
+
+export default Recognition
