@@ -49,7 +49,8 @@ const Recognition =  () => {
             const decodeAudio = await context.decodeAudioData(arrayBuffer);
             audioSource.buffer = decodeAudio
             audioSource.connect(context.destination);
-            if (context.state === 'suspended') return await context.resume(0);
+            console.log(decodeAudio,context.state,audioSource);
+            if (context.state === 'suspended') return await context.resume();
             else if (context.state === 'running') return await context.suspend()
             else return audioSource.start(0);
         } catch (e) {
