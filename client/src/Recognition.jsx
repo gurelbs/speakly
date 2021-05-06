@@ -50,9 +50,9 @@ const Recognition =  () => {
             audioSource.buffer = decodeAudio
             audioSource.connect(context.destination);
             console.log(decodeAudio,context.state,audioSource);
-            if (context.state === 'suspended') return await context.resume();
-            else if (context.state === 'running') return await context.suspend()
-            else return audioSource.start(0);
+            if (context.state === 'suspended') return context.suspend();
+            else if (context.state === 'running') return audioSource.start(0,0);
+            else return audioSource.start(0,0);
         } catch (e) {
             setIsLoading(false)
             if (axios.isCancel(e)) return console.log('Request canceled', e.message)
