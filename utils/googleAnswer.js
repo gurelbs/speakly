@@ -6,10 +6,13 @@ const googleAnswer = async (term, lang) => {
         const browser = await puppeteer.launch();
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
-        await page.goto(url,{waitUntil: 'domcontentloaded'});
+        const navigationPromise = page.waitForNavigation({waitUntil: "domcontentloaded"});
+        await page.goto(url);
+        await navigationPromise;
         let res;
         let foundElement;
         try {
+            await navigationPromise;
             foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 5000});
         } catch (error) {
             console.log(error);
