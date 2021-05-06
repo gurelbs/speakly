@@ -1,16 +1,19 @@
 import React,{useEffect, useState} from 'react'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import { googleSearch, wikiSearch, youtubeSearch } from './Commands/Commends'
+import axios from 'axios'
 import api from './api/api'
 import Languages from './Languages'
 import allLanguagesList from './languagesList'
 import Spinner from './Spinner'
-import toArrayBuffer from './utils'
+import {toArrayBuffer} from './utils'
 
 const Recognition =  () => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
     const [currentLanguages, setCurrentLanguages] = useState('')
     const [textData, setTextData] = useState({})
-    const [arrayBufferData, setArrayBufferData] = useState(null)
+    const [audioBuffer, setAudioBuffer] = useState(null)
     const [textAnswer, setTextAnswer] = useState(null)
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
@@ -32,26 +35,27 @@ const Recognition =  () => {
         if (final?.trim() === '' || !final?.length) return console.log('no term');
         try {
             setIsLoading(true)
-            const userData = await api.post('/cmd', { txt: txt, lang: ('he-il' || currentLanguages)})
+            const userData = await api.post('/cmd', { 
+                cancelToken: source.token,
+                txt: txt, 
+                lang: ('he-il' || currentLanguages)
+            })
             const {answer,content} = userData.data
-            const ab = toArrayBuffer(content.data)
             setIsLoading(false)
             setTextAnswer(answer.res);
-            setArrayBufferData(ab)
-            const audio = new (window.AudioContext || window.webkitAudioContext)()
-            const buffer = await audio.createBuffer(2, arrayBufferData.byteLength, 44000);
-            const source = audio.createBufferSource();
-            source.buffer = buffer
-            source.connect(audio.destination);
-            console.log(audio.state);
-            if (audio.state === 'suspended') {
-                return audio.resume();
-            }
-            return source.start()
+            const arrayBuffer = toArrayBuffer(content.data)
+            const context = new AudioContext();
+            const audioSource = context.createBufferSource();
+            const decodeAudio = await context.decodeAudioData(arrayBuffer);
+            audioSource.buffer = decodeAudio
+            audioSource.connect(context.destination);
+            if (context.state === 'suspended') return await context.resume(0);
+            else if (context.state === 'running') return await context.suspend()
+            else return audioSource.start(0);
         } catch (e) {
-            console.log(e);
             setIsLoading(false)
-            setTextAnswer(e.message);
+            if (axios.isCancel(e)) return console.log('Request canceled', e.message)
+            else return console.log(e)
         }
     }
     useEffect(() => {
@@ -85,14 +89,11 @@ const Recognition =  () => {
         return () => clearTimeout(id)
     }, [final])
     useEffect(() => {
-        let id;
-        if (final?.length > 0 && text !== '' && interim === ''){
-            console.log('auto run after 10ms');
-            setTimeout(() => {
-                fetchData(final)
-            }, 10);
+        if (final !== '' && text !== '' && interim === ''){
+            console.log('fetching Data with auto cancellation token.');
+            fetchData(final)
         }
-        return () => clearTimeout(id)
+        return () => source.cancel('Operation canceled by the user.');
     }, [final,interim,text])
     const clear = () => {
         resetTranscript()
@@ -124,19 +125,11 @@ const Recognition =  () => {
     useEffect(() => {
         if (interimTranscript === 'לך לישון') stopReco()
     }, [interimTranscript])
-    useEffect(() => {
-        if (interimTranscript.startsWith('תרגם')){
-            let langText = interimTranscript.split(' ')
-            let lang = langText.splice(langText.length-1,langText.length).join('')
-            console.log(lang.split('').splice(1,lang.length).join(''))
-        }
-    }, [interimTranscript])
   return (
       <div>
-          {console.log(arrayBufferData)}
-        <p>Transcript: {text}</p>
-        <p>interim Transcript: {interim}</p>
-        <p>final Transcript: {final}</p>
+        <p><b>תרגום:</b> {text}</p>
+        <p><b>זיהוי קולי:</b> {interim}</p>
+        <p><b>תרגום סופי:</b> {final}</p>
         <div style={{direction: 'rtl', textAlign: 'center'}}>
             {(isLoading && <Spinner/>) || ''}
         </div>
@@ -152,5 +145,13 @@ const Recognition =  () => {
       </div>
   )
 }
-
 export default Recognition
+
+
+    // useEffect(() => {
+    //     if (interimTranscript.startsWith('תרגם')){
+    //         let langText = interimTranscript.split(' ')
+    //         let lang = langText.splice(langText.length-1,langText.length).join('')
+    //         console.log(lang.split('').splice(1,lang.length).join(''))
+    //     }
+    // }, [interimTranscript])

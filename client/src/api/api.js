@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 let url;
 
 if (process.env.NODE_ENV === 'development'){
@@ -10,7 +9,7 @@ if (process.env.NODE_ENV === 'production'){
 }
 
 const api = axios.create({
-    baseURL: url
+    baseURL: url,
 })
 
 export default api
