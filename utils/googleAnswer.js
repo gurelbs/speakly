@@ -13,20 +13,15 @@ const googleAnswer = async (term, lang) => {
         let foundElement;
         try {
             await navigationPromise;
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 10000});
-        } catch (error) {
-            console.log(error);
-        }
-        let answerBox = await page.$('.xpdopen .kp-header div')
-        let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
-        let currency = await page.$('#knowledge-currency__updatable-data-column > div')
-        let translate = await page.$('#tw-container #tw-target-text')
-        let finance = await page.$('g-card-section span')
-        let calc = await page.$('#cwos')
-        let weather = await page.$('#wob_wc')
-        try {
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
+            let answerBox = await page.$('.xpdopen .kp-header div')
+            let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
+            let currency = await page.$('#knowledge-currency__updatable-data-column > div')
+            let translate = await page.$('#tw-container #tw-target-text')
+            let finance = await page.$('g-card-section span')
+            let calc = await page.$('#cwos')
+            let weather = await page.$('#wob_wc')
             if (foundElement) {
-                
                 if (answerBox){
                     await navigationPromise;
                     res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
