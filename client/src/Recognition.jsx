@@ -7,13 +7,11 @@ import Languages from './Languages'
 import allLanguagesList from './languagesList'
 import Spinner from './Spinner'
 import {toArrayBuffer} from './utils'
-
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const [currentLanguages, setCurrentLanguages] = useState('')
     const [textData, setTextData] = useState({})
-    const [audioBuffer, setAudioBuffer] = useState(null)
     const [textAnswer, setTextAnswer] = useState(null)
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
@@ -32,7 +30,6 @@ const Recognition =  () => {
     },[transcript,interimTranscript,finalTranscript,isSleep])
 
     const fetchData = async (txt) => {
-        if (final?.trim() === '' || !final?.length) return console.log('no term');
         try {
             setIsLoading(true)
             const userData = await api.post('/cmd', { 
@@ -49,7 +46,7 @@ const Recognition =  () => {
             const decodeAudio = await context.decodeAudioData(arrayBuffer);
             audioSource.buffer = decodeAudio
             audioSource.connect(context.destination);
-            console.log(decodeAudio,context.state,audioSource);
+            console.log(decodeAudio,context.state);
             if (context.state === 'suspended') return context.suspend();
             else if (context.state === 'running') return audioSource.start(0,0);
             else return audioSource.start(0,0);
@@ -108,23 +105,22 @@ const Recognition =  () => {
             : SpeechRecognition.stopListening({continuous: false})
     }
     const stopReco = () => {
-        setToggleBtn(!toggleBtn)
+        setToggleBtn(false)
         setIsSleep(true)
         clear()
         return SpeechRecognition.stopListening({continuous: false})
     }
-
-    useEffect(() => {
-        if (interimTranscript === 'דבר') {
-            fetchData(finalTranscript)
-            clear()
-        }
-    }, [interimTranscript,finalTranscript,clear])
     useEffect(() => {
         if (interimTranscript === 'רמי') return clear()
     }, [interimTranscript])
     useEffect(() => {
-        if (interimTranscript === 'לך לישון') stopReco()
+        if (interimTranscript === 'לך לישון') return stopReco()
+    }, [interimTranscript])
+    useEffect(() => {
+        if (interimTranscript.includes('מחק')) return clear()
+    }, [interimTranscript])
+    useEffect(() => {
+        if (interimTranscript === ('קונסולה')) return console.clear()
     }, [interimTranscript])
   return (
       <div>

@@ -20,7 +20,7 @@ router.post('/api/cmd', async (req, res) => {
             b64: false,
             callback(error, content) {
                 res.status(201)
-                    .send(error || {content,answer})
+                    .send(error || {content, answer})
                     .end()
             }
         })

@@ -13,7 +13,7 @@ const googleAnswer = async (term, lang) => {
         let foundElement;
         try {
             await navigationPromise;
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 5000});
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 10000});
         } catch (error) {
             console.log(error);
         }
@@ -26,7 +26,9 @@ const googleAnswer = async (term, lang) => {
         let weather = await page.$('#wob_wc')
         try {
             if (foundElement) {
+                
                 if (answerBox){
+                    await navigationPromise;
                     res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
                         .split('\n')
                         .splice(0,2)
@@ -37,9 +39,11 @@ const googleAnswer = async (term, lang) => {
                         .replace('/',': '))
                 }
                 if (wikiAnswer && !answerBox){
+                    await navigationPromise;
                     res = await page.evaluate(() => document.querySelector('#kp-wp-tab-overview div span').innerText);
                 }
                 if (currency){
+                    await navigationPromise;
                     res = await page.evaluate(() => document
                         .querySelector('#knowledge-currency__updatable-data-column > div').innerText
                         .split('\n')
@@ -48,16 +52,20 @@ const googleAnswer = async (term, lang) => {
                         .replace('ביטקוין','בִּיטְקוֹיִיְן'))
                 }
                 if (translate){
+                    await navigationPromise;
                     res = await page.evaluate(() => document.querySelector('#tw-container #tw-target-text').innerText)
                     lang = await page.evaluate(() => document.querySelector("#tw-container #tw-target-text span").getAttribute('lang'))
                 }
                 if (finance){
+                    await navigationPromise;
                     res = await page.evaluate(() => document.querySelector('g-card-section span').innerText)
                 }
                 if (calc){
+                    await navigationPromise;
                     res = await page.evaluate(() => document.querySelector('#cwos').innerText)
                 }
                 if (weather){
+                    await navigationPromise;
                     res = await page.evaluate(() => {
                         let temp = document.querySelector("#wob_tm").innerText
                         let loc = document.querySelector("#wob_loc").innerText
