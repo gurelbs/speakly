@@ -8,22 +8,20 @@ router.post('/api/cmd', async (req, res) => {
     const data = req.body
     const {txt,lang} = data
     const answer = await googleAnswer(txt,lang)
-    console.log(answer)
     try {
         tts.speech({
             key: process.env.VOICE_RSS_API,
             hl: data.lang,
-            src: answer,
+            src: answer.res,
             r: 0,
             c: 'mp3',
             f: '44khz_16bit_stereo',
             ssml: false,
             b64: false,
-            callback(err, content) {
-                const decoded = String.fromCharCode(...new Uint8Array(content));
+            callback(error, content) {
                 res.status(201)
-                .send({decoded, answer} || err)
-                .end()
+                    .send(error || {content,answer})
+                    .end()
             }
         })
     } catch (err) {

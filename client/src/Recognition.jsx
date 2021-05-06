@@ -3,66 +3,95 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import api from './api/api'
 import Languages from './Languages'
 import allLanguagesList from './languagesList'
+import Spinner from './Spinner'
 import {
-    googleSearch
+    googleSearch,
+    wikiSearch,
+    // playRadio,
+    youtubeSearch
 } from './Commands/Commends'
 
 export default function Recognition () {
     const [currentLanguages, setCurrentLanguages] = useState('')
     const [textData, setTextData] = useState({})
-    const [textAnswer, setTextAnswer] = useState('')
+    const [textAnswer, setTextAnswer] = useState(null)
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
     let {text,interim,final} = textData
     useEffect(() => {
-        if (!SpeechRecognition.browserSupportsSpeechRecognition()) return console.log('browser not supported');
-        if (!isSleep){
-            SpeechRecognition.startListening({continuous: true})
-        }
+        const ssIsWork = SpeechRecognition.browserSupportsSpeechRecognition()
+        if (!ssIsWork) console.log('browser not supported');
+        if (!isSleep) SpeechRecognition.startListening({continuous: true})
         setTextData({
             text: transcript,
             interim: interimTranscript,
             final: finalTranscript
         })
-    },[transcript,interimTranscript,finalTranscript])
+    },[transcript,interimTranscript,finalTranscript,isSleep])
 
     const fetchData = async (txt) => {
         if (final?.trim() === '' || !final?.length) return console.log('no term');
-        setIsLoading(true)
         try {
-            const userData = await api({
-                method: 'POST',
-                // responseType: 'arr',
-                url: '/cmd',
-                data: {
-                    txt: txt,
-                    lang: currentLanguages || 'he-il'
-                }
-            })
-            const {decoded, answer} = userData.data
+            setIsLoading(true)
+            const userData = await api.post('/cmd', { txt: txt, lang: ('he-il' || currentLanguages)})
             setIsLoading(false)
+            const {answer,content} = userData.data
             setTextAnswer(answer.res);
-            const encoded = Uint8Array.from([...decoded].map(ch => ch.charCodeAt())).buffer;
-            let audio = new (window.AudioContext || window.webkitAudioContext)();
-            let data = await audio.decodeAudioData(encoded)
-            let source = audio.createBufferSource();
-            source.buffer = data
-            source.connect(audio.destination)
-            return source.start()
-            
+            let play = async () => {
+                try {
+                    const audio = new (window.AudioContext || window.webkitAudioContext)()
+                    const toArrayBuffer = buffer => {
+                        const ab = new ArrayBuffer(buffer.length);
+                        const view = new Uint8Array(ab);
+                        buffer.map(i => view[i] = buffer[i])
+                        return ab;
+                    }
+                    const arrayBuffer = toArrayBuffer(content.data)
+                    const audioBuffer = await audio.decodeAudioData(arrayBuffer);
+                    console.log(audioBuffer);
+                    const source = audio.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.connect(audio.destination);
+                    source.start();
+                } catch (error) {
+                    console.log(error);
+                }
+                }
+            return await play()
         } catch (error) {
-            // setTextAnswer('קצת מביך, לא מצאתי כלום...');
             console.log(error);
+            setIsLoading(false)
         }
     }
     useEffect(() => {
         let id;
-        if (final?.includes('חפש בגוגל')){
+        if (final?.startsWith('חפש בגוגל')){
             id = setTimeout( () => {
                 googleSearch(final)
-            } ,300)
+                clear()
+            } ,200)
+        }
+        return () => clearTimeout(id)
+    }, [final])
+    useEffect(() => {
+        let id;
+        if (final?.startsWith('חפש בויקיפדיה')){
+            id = setTimeout( () => {
+                wikiSearch(final)
+                clear()
+            } ,200)
+        }
+        return () => clearTimeout(id)
+    }, [final])
+    useEffect(() => {
+        let id;
+        if (final?.startsWith('חפש ביוטיוב')){
+            id = setTimeout( () => {
+                youtubeSearch(final)
+                clear()
+            } ,200)
         }
         return () => clearTimeout(id)
     }, [final])
@@ -75,10 +104,11 @@ export default function Recognition () {
             }, 10);
         }
         return () => clearTimeout(id)
-    }, [final])
+    }, [final,interim,text])
     const clear = () => {
         resetTranscript()
         setTextAnswer('')
+        setIsLoading(false)
     }
     const handleReco = () => {
         setToggleBtn(toggleBtn => !toggleBtn)
@@ -92,14 +122,15 @@ export default function Recognition () {
         clear()
         return SpeechRecognition.stopListening({continuous: false})
     }
+
     useEffect(() => {
         if (interimTranscript === 'דבר') {
             fetchData(finalTranscript)
             clear()
         }
-    }, [interimTranscript,finalTranscript])
+    }, [interimTranscript,finalTranscript,clear])
     useEffect(() => {
-        if (interimTranscript === 'מחק') clear()
+        if (interimTranscript === 'רמי') return clear()
     }, [interimTranscript])
     useEffect(() => {
         if (interimTranscript === 'לך לישון') stopReco()
@@ -116,6 +147,9 @@ export default function Recognition () {
         <p>Transcript: {text}</p>
         <p>interim Transcript: {interim}</p>
         <p>final Transcript: {final}</p>
+        <div style={{direction: 'rtl', textAlign: 'center'}}>
+            {(isLoading && <Spinner/>) || ''}
+        </div>
         <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer}</h1>
         <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
         <div>
