@@ -10,7 +10,7 @@ router.post('/api/cmd', async (req, res) => {
     try {
         const answer = await googleAnswer(txt,lang)
         tts.speech({
-            key: process.env.VOICE_RSS_API,
+            key: '2a0ec72724104343b35809b65a8634f8',
             hl: data.lang,
             src: answer.res,
             r: 0,
