@@ -9,7 +9,7 @@ const googleAnswer = async (term, lang) => {
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
         const navigationPromise = page.waitForNavigation({waitUntil: "domcontentloaded"});
-        await page.goto(url);
+        await page.goto(url, {waitUntil: 'networkidle2'});
         await navigationPromise;
         foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
         let answerBox = await page.$('.xpdopen .kp-header div')
