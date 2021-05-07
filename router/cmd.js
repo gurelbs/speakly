@@ -7,8 +7,8 @@ const router = new express.Router()
 router.post('/api/cmd', async (req, res) => {   
     const data = req.body
     const {txt,lang} = data
-    const answer = await googleAnswer(txt,lang)
     try {
+        const answer = await googleAnswer(txt,lang)
         tts.speech({
             key: process.env.VOICE_RSS_API,
             hl: data.lang,
@@ -19,7 +19,7 @@ router.post('/api/cmd', async (req, res) => {
             ssml: false,
             b64: false,
             callback(error, content) {
-                res.status(201)
+                return res.status(201)
                     .send(error || {content, answer})
                     .end()
             }

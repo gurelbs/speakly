@@ -9,18 +9,17 @@ const googleAnswer = async (term, lang) => {
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
         const navigationPromise = page.waitForNavigation({waitUntil: "domcontentloaded"});
+        await page.goto(url);
+        await navigationPromise;
+        foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
+        let answerBox = await page.$('.xpdopen .kp-header div')
+        let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
+        let currency = await page.$('#knowledge-currency__updatable-data-column > div')
+        let translate = await page.$('#tw-container #tw-target-text')
+        let finance = await page.$('g-card-section span')
+        let calc = await page.$('#cwos')
+        let weather = await page.$('#wob_wc')
         try {
-            await page.goto(url);
-            await navigationPromise;
-            await navigationPromise;
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
-            let answerBox = await page.$('.xpdopen .kp-header div')
-            let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
-            let currency = await page.$('#knowledge-currency__updatable-data-column > div')
-            let translate = await page.$('#tw-container #tw-target-text')
-            let finance = await page.$('g-card-section span')
-            let calc = await page.$('#cwos')
-            let weather = await page.$('#wob_wc')
             if (foundElement) {
                 if (answerBox){
                     await navigationPromise;
@@ -35,7 +34,7 @@ const googleAnswer = async (term, lang) => {
                 }
                 if (wikiAnswer && !answerBox){
                     await navigationPromise;
-                    res = await page.evaluate(() => document.querySelector('#kp-wp-tab-overview div span').innerText);
+                    return res = await page.evaluate(() => document.querySelector('#kp-wp-tab-overview div span').innerText);
                 }
                 if (currency){
                     await navigationPromise;
@@ -73,7 +72,8 @@ const googleAnswer = async (term, lang) => {
                 res = `קצת מביך... לא מצאתי מידע ישיר על ${term}`
             }
         } catch (error) {
-            res = `קצת מביך... לא מצאתי מידע ישיר על ${term}`
+            res = `נסה לחפש שוב עם שאילתא מדוייקת יותר`
+            await context.close(); 
         }
         await context.close(); 
         RENDER_CATCH.set(url, {res,lang})

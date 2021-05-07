@@ -17,17 +17,7 @@ const Recognition =  () => {
     const [isSleep, setIsSleep] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
-    let {text,interim,final} = textData
-    useEffect(() => {
-        const ssIsWork = SpeechRecognition.browserSupportsSpeechRecognition()
-        if (!ssIsWork) console.log('browser not supported');
-        if (!isSleep) SpeechRecognition.startListening({continuous: true})
-        setTextData({
-            text: transcript,
-            interim: interimTranscript,
-            final: finalTranscript
-        })
-    },[transcript,interimTranscript,finalTranscript,isSleep])
+    let {text,interim,final} = textData;
 
     const fetchData = async (txt) => {
         try {
@@ -35,9 +25,9 @@ const Recognition =  () => {
             const userData = await api.post('/cmd', { 
                 cancelToken: source.token,
                 txt: txt, 
-                lang: (currentLanguages || 'he-il')
+                lang: ('he-il' || currentLanguages)
             })
-            const {answer,content} = userData.data
+            const {answer,content} = userData?.data
             setIsLoading(false)
             setTextAnswer(answer.res);
             const arrayBuffer = toArrayBuffer(content.data)
@@ -56,6 +46,34 @@ const Recognition =  () => {
             else return console.log('there is some problem:',e.message)
         }
     }
+    const clear = () => {
+        resetTranscript()
+        setTextAnswer('')
+        setIsLoading(false)
+    }
+    const handleReco = () => {
+        setToggleBtn(toggleBtn => !toggleBtn)
+        return toggleBtn && !isSleep
+            ? SpeechRecognition.startListening({continuous: true})
+            : SpeechRecognition.stopListening({continuous: false})
+    }
+    useEffect(() => {
+        if (interimTranscript === 'רמי') return clear()
+    }, [interimTranscript])
+    useEffect(() => {
+        if (interimTranscript === 'רענן את הדף') return window.location.reload()
+    }, [interimTranscript])
+    useEffect(() => {
+        if (interimTranscript === 'לך לישון') {
+            setIsLoading(false)
+            resetTranscript()
+            setIsSleep(true)
+            clear()
+        }
+    }, [interimTranscript])
+    useEffect(() => {
+        if (interimTranscript.includes('מחק הכל')) return clear() + console.clear()
+    }, [interimTranscript])
     useEffect(() => {
         let id;
         if (final?.startsWith('חפש בגוגל')){
@@ -93,40 +111,16 @@ const Recognition =  () => {
         }
         return () => source.cancel('Operation canceled by the user.');
     }, [final,interim,text])
-    //     useEffect(() => {
-    //     if (interimTranscript.startsWith('תרגם')){
-    //         let langText = interimTranscript.split(' ')
-    //         let lang = langText.splice(langText.length-1,langText.length).join('')
-    //         console.log(currentLanguages,lang);
-    //         setCurrentLanguages(lang)
-    //     }
-    // }, [interimTranscript])
-    const clear = () => {
-        resetTranscript()
-        setTextAnswer('')
-        setIsLoading(false)
-    }
-    const handleReco = () => {
-        setToggleBtn(toggleBtn => !toggleBtn)
-        return toggleBtn && !isSleep
-            ? SpeechRecognition.startListening({continuous: true})
-            : SpeechRecognition.stopListening({continuous: false})
-    }
-    const stopReco = () => {
-        setIsSleep(true)
-        clear()
-        setToggleBtn(false)
-        return handleReco()
-    }
     useEffect(() => {
-        if (interimTranscript === 'רמי') return clear()
-    }, [interimTranscript])
-    useEffect(() => {
-        if (interimTranscript === 'לך לישון') return clear() + SpeechRecognition.stopListening({continuous: false})
-    }, [interimTranscript])
-    useEffect(() => {
-        if (interimTranscript.includes('מחק הכל')) return clear() + console.clear()
-    }, [interimTranscript])
+        const ssIsWork = SpeechRecognition.browserSupportsSpeechRecognition()
+        if (!ssIsWork) console.log('browser not supported');
+        if (!isSleep) SpeechRecognition.startListening({continuous: true})
+        setTextData({
+            text: transcript,
+            interim: interimTranscript,
+            final: finalTranscript
+        })
+    },[transcript,interimTranscript,finalTranscript,isSleep])
   return (
       <div>
         <p><b>תרגום:</b> {text}</p>
@@ -149,4 +143,11 @@ const Recognition =  () => {
 }
 export default Recognition
 
-
+    //     useEffect(() => {
+    //     if (interimTranscript.startsWith('תרגם')){
+    //         let langText = interimTranscript.split(' ')
+    //         let lang = langText.splice(langText.length-1,langText.length).join('')
+    //         console.log(currentLanguages,lang);
+    //         setCurrentLanguages(lang)
+    //     }
+    // }, [interimTranscript])
