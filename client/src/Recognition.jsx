@@ -20,6 +20,7 @@ const Recognition =  () => {
     let {text,interim,final} = textData;
 
     const fetchData = async (txt) => {
+        SpeechRecognition.abortListening()
         try {
             setIsLoading(true)
             const userData = await api.post('/cmd', { 
@@ -37,8 +38,14 @@ const Recognition =  () => {
             audioSource.buffer = decodeAudio
             audioSource.connect(context.destination);
             console.log(decodeAudio,context.state);
-            if (context.state === 'suspended') return audioSource.suspended()
-            else if (context.state === 'running') return audioSource.start(0,0);
+            audioSource.start(0,0);
+            if (context.state === 'suspended')  {
+                audioSource.start();
+                resetTranscript()
+                return audioSource.stop()
+            }
+            resetTranscript()
+            return SpeechRecognition.startListening({continuous: true})
         } catch (e) {
             setIsLoading(false)
             if (axios.isCancel(e)) return console.log('Request canceled', e.message)

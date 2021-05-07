@@ -10,7 +10,7 @@ router.post('/api/cmd', async (req, res) => {
     try {
         const answer = await googleAnswer(txt,lang)
         tts.speech({
-            key: '2a0ec72724104343b35809b65a8634f8',
+            key: process.env.VOICE_RSS_API,
             hl: data.lang,
             src: answer.res,
             r: 0,
@@ -18,10 +18,14 @@ router.post('/api/cmd', async (req, res) => {
             f: '44khz_16bit_stereo',
             ssml: false,
             b64: false,
-            callback(error, content) {
-                return res.status(201)
-                    .send(error || {content, answer})
-                    .end()
+            async callback(error, content) {
+                try {
+                    return res.status(201)
+                        .send(error || {content,answer})
+                        .end()                
+                } catch (error) {
+                    res.end(error)
+                }
             }
         })
     } catch (err) {
