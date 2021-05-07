@@ -3,15 +3,15 @@ const RENDER_CATCH = new Map()
 const googleAnswer = async (term, lang) => {
         const url = `https://google.com/search?q=${term}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
+        let res;
+        let foundElement;
         const browser = await puppeteer.launch();
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
         const navigationPromise = page.waitForNavigation({waitUntil: "domcontentloaded"});
-        await page.goto(url);
-        await navigationPromise;
-        let res;
-        let foundElement;
         try {
+            await page.goto(url);
+            await navigationPromise;
             await navigationPromise;
             foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
             let answerBox = await page.$('.xpdopen .kp-header div')
@@ -65,8 +65,8 @@ const googleAnswer = async (term, lang) => {
                         let temp = document.querySelector("#wob_tm").innerText
                         let loc = document.querySelector("#wob_loc").innerText
                         let date = document.querySelector("#wob_dts").innerText
-                        let desc = document.querySelector('#wob_dc').innerText
-                        return `מזג האוויר ב${loc}: ${temp}°C, ${desc}. (${date}).`
+                        let desc = document.querySelector('#wob_dc').innerText.replace('מעונן','מְעֻנָּן')
+                        return `מזג האוויר ב${loc}: ${temp}°, ${desc}. (${date}).`
                     })
                 }
             } else {

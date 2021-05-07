@@ -35,7 +35,7 @@ const Recognition =  () => {
             const userData = await api.post('/cmd', { 
                 cancelToken: source.token,
                 txt: txt, 
-                lang: ('he-il' || currentLanguages)
+                lang: (currentLanguages || 'he-il')
             })
             const {answer,content} = userData.data
             setIsLoading(false)
@@ -47,13 +47,13 @@ const Recognition =  () => {
             audioSource.buffer = decodeAudio
             audioSource.connect(context.destination);
             console.log(decodeAudio,context.state);
-            if (context.state === 'suspended') return context.suspend();
+            if (context.state === 'suspended') return context.suspend(0);
             else if (context.state === 'running') return audioSource.start(0,0);
-            else return audioSource.start(0,0);
+            else return audioSource.resume()
         } catch (e) {
             setIsLoading(false)
             if (axios.isCancel(e)) return console.log('Request canceled', e.message)
-            else return console.log(e)
+            else return console.log('there is some problem:',e.message)
         }
     }
     useEffect(() => {
@@ -93,6 +93,14 @@ const Recognition =  () => {
         }
         return () => source.cancel('Operation canceled by the user.');
     }, [final,interim,text])
+    //     useEffect(() => {
+    //     if (interimTranscript.startsWith('תרגם')){
+    //         let langText = interimTranscript.split(' ')
+    //         let lang = langText.splice(langText.length-1,langText.length).join('')
+    //         console.log(currentLanguages,lang);
+    //         setCurrentLanguages(lang)
+    //     }
+    // }, [interimTranscript])
     const clear = () => {
         resetTranscript()
         setTextAnswer('')
@@ -100,27 +108,24 @@ const Recognition =  () => {
     }
     const handleReco = () => {
         setToggleBtn(toggleBtn => !toggleBtn)
-        return toggleBtn === true
+        return toggleBtn && !isSleep
             ? SpeechRecognition.startListening({continuous: true})
             : SpeechRecognition.stopListening({continuous: false})
     }
     const stopReco = () => {
-        setToggleBtn(false)
         setIsSleep(true)
         clear()
-        return SpeechRecognition.stopListening({continuous: false})
+        setToggleBtn(false)
+        return handleReco()
     }
     useEffect(() => {
         if (interimTranscript === 'רמי') return clear()
     }, [interimTranscript])
     useEffect(() => {
-        if (interimTranscript === 'לך לישון') return stopReco()
+        if (interimTranscript === 'לך לישון') return clear() + SpeechRecognition.stopListening({continuous: false})
     }, [interimTranscript])
     useEffect(() => {
-        if (interimTranscript.includes('מחק')) return clear()
-    }, [interimTranscript])
-    useEffect(() => {
-        if (interimTranscript === ('קונסולה')) return console.clear()
+        if (interimTranscript.includes('מחק הכל')) return clear() + console.clear()
     }, [interimTranscript])
   return (
       <div>
@@ -145,10 +150,3 @@ const Recognition =  () => {
 export default Recognition
 
 
-    // useEffect(() => {
-    //     if (interimTranscript.startsWith('תרגם')){
-    //         let langText = interimTranscript.split(' ')
-    //         let lang = langText.splice(langText.length-1,langText.length).join('')
-    //         console.log(lang.split('').splice(1,lang.length).join(''))
-    //     }
-    // }, [interimTranscript])
