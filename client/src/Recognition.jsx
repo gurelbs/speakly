@@ -1,3 +1,5 @@
+import url from 'url'
+import {toArrayBuffer} from './utils'
 import React,{useEffect, useState} from 'react'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import { googleSearch, wikiSearch, youtubeSearch } from './Commands/Commends'
@@ -6,50 +8,33 @@ import api from './api/api'
 import Languages from './Languages'
 import allLanguagesList from './languagesList'
 import Spinner from './Spinner'
-import {toArrayBuffer} from './utils'
+import tts from './tts'
+
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const [currentLanguages, setCurrentLanguages] = useState('')
     const [textData, setTextData] = useState({})
     const [textAnswer, setTextAnswer] = useState(null)
+    const [audioAnswer, setAudioAnswer] = useState(null)
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
     let {text,interim,final} = textData;
-
-    const fetchData = async (txt) => {
-        SpeechRecognition.abortListening()
+    const fetchTextAnswer = async (txt) => {
         try {
-            setIsLoading(true)
-            const userData = await api.post('/cmd', { 
+            const {data} = await api.post('/cmd', { 
                 cancelToken: source.token,
-                txt: txt, 
-                lang: ('he-il' || currentLanguages)
+                txt: txt
             })
-            const {answer,content} = userData?.data
-            setIsLoading(false)
-            setTextAnswer(answer.res);
-            const arrayBuffer = toArrayBuffer(content.data)
-            const context = new AudioContext();
-            const audioSource = context.createBufferSource();
-            const decodeAudio = await context.decodeAudioData(arrayBuffer);
-            audioSource.buffer = decodeAudio
-            audioSource.connect(context.destination);
-            console.log(decodeAudio,context.state);
-            audioSource.start(0,0);
-            if (context.state === 'suspended')  {
-                audioSource.start();
-                resetTranscript()
-                return audioSource.stop()
-            }
-            resetTranscript()
-            return SpeechRecognition.startListening({continuous: true})
+            return data.answer
         } catch (e) {
-            setIsLoading(false)
-            if (axios.isCancel(e)) return console.log('Request canceled', e.message)
-            else return console.log('there is some problem:',e.message)
+            if (axios.isCancel(e)) {
+                console.log('Request canceled', e.message)
+            } else {
+                console.log('there is some problem:',e.message)
+            }
         }
     }
     const clear = () => {
@@ -112,11 +97,28 @@ const Recognition =  () => {
     }, [final])
     useEffect(() => {
         if (final !== '' && text !== '' && interim === ''){
-            console.log('fetching Data with auto cancellation token.');
-            fetchData(final)
+            const fetchData = async () => {
+                console.log('fetching Data with auto cancellation token.');
+                const answer = await fetchTextAnswer(final)
+                setTextAnswer(answer)
+                return tts.speech({
+                    key: '2a0ec72724104343b35809b65a8634f8',
+                    // key: process.envREACT_APP_VOICE_RSS_API,
+                    src: answer,
+                    hl: 'en-us',
+                    ssl: true,
+                    callback (error, content) {
+                        setAudioAnswer(error || content)
+                    }
+                });
+            }
+            fetchData()
         }
         return () => source.cancel('Operation canceled by the user.');
     }, [final,interim,text])
+    useEffect(() => {
+        console.log(audioAnswer);
+    }, [audioAnswer])
     useEffect(() => {
         const ssIsWork = SpeechRecognition.browserSupportsSpeechRecognition()
         if (!ssIsWork) console.log('browser not supported');
@@ -132,6 +134,9 @@ const Recognition =  () => {
         <p><b>תרגום:</b> {text}</p>
         <p><b>זיהוי קולי:</b> {interim}</p>
         <p><b>תרגום סופי:</b> {final}</p>
+        {/* <audio controls>
+            <source src={audioUrl} autoPlay type='audio/mp3' />
+        </audio> */}
         <div style={{direction: 'rtl', textAlign: 'center'}}>
             {(isLoading && <Spinner/>) || ''}
         </div>
@@ -142,7 +147,7 @@ const Recognition =  () => {
         </div>
         <button 
             disabled={(text !== '' || !toggleBtn) ? false : true}
-            onClick={() => fetchData(transcript)}>דבר</button>
+            onClick={() => fetchTextAnswer(transcript)}>דבר</button>
         <button onClick={clear}>מחק</button>
       </div>
   )

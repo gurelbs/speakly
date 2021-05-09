@@ -1,4 +1,3 @@
-﻿'use strict';
 
 module.exports = {
     speech: speech
@@ -30,11 +29,11 @@ function _request(settings) {
         form: req,
         encoding: null
     }, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             if (settings.callback) {
                 if (error)
                     settings.callback(error, null);
-                else if (body.indexOf('ERROR') == 0)
+                else if (body.indexOf('ERROR') === 0)
                     settings.callback(body, null);
                 else
                     settings.callback(null, body);

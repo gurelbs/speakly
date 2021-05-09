@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const RENDER_CATCH = new Map()
-const googleAnswer = async (term, lang) => {
+const googleAnswer = async (term) => {
         const url = `https://google.com/search?q=${term}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         let res;
@@ -48,7 +48,6 @@ const googleAnswer = async (term, lang) => {
                 if (translate){
                     await navigationPromise;
                     res = await page.evaluate(() => document.querySelector('#tw-container #tw-target-text').innerText)
-                    lang = await page.evaluate(() => document.querySelector("#tw-container #tw-target-text span").getAttribute('lang'))
                 }
                 if (finance){
                     await navigationPromise;
@@ -71,13 +70,15 @@ const googleAnswer = async (term, lang) => {
             } else {
                 res = `קצת מביך... לא מצאתי מידע ישיר על ${term}`
             }
+            await context.close(); 
+            RENDER_CATCH.set(url, res)
+            return res
         } catch (error) {
             res = `נסה לחפש שוב עם שאילתא מדוייקת יותר`
+            RENDER_CATCH.set(url, res)
             await context.close(); 
+            return res
         }
-        await context.close(); 
-        RENDER_CATCH.set(url, {res,lang})
-        return { res, lang }
 }
 
 module.exports = googleAnswer
