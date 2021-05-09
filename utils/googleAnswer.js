@@ -3,25 +3,23 @@ const RENDER_CATCH = new Map()
 const googleAnswer = async (term) => {
         const url = `https://google.com/search?q=${term}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
-        let res;
+        let res = '';
         let foundElement;
-        const browser = await puppeteer.launch({
-            ignoreDefaultArgs: ['--disable-extensions'],
-        });
+        const browser = await puppeteer.launch();
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
-        const navigationPromise = page.waitForNavigation({waitUntil: "domcontentloaded"});
+        const navigationPromise = page.waitForNavigation();
         await page.goto(url);
-        await navigationPromise;
-        let answerBox = await page.$('.xpdopen .kp-header div')
-        let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
-        let currency = await page.$('#knowledge-currency__updatable-data-column > div')
-        let translate = await page.$('#tw-container #tw-target-text')
-        let finance = await page.$('g-card-section span')
-        let calc = await page.$('#cwos')
-        let weather = await page.$('#wob_wc')
         try {
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
+            await navigationPromise;
+            let answerBox = await page.$('.xpdopen .kp-header div')
+            let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
+            let currency = await page.$('#knowledge-currency__updatable-data-column > div')
+            let translate = await page.$('#tw-container #tw-target-text')
+            let finance = await page.$('g-card-section span')
+            let calc = await page.$('#cwos')
+            let weather = await page.$('#wob_wc')
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout: 3000});
             if (foundElement) {
                 if (answerBox){
                     await navigationPromise;
@@ -72,15 +70,13 @@ const googleAnswer = async (term) => {
             } else {
                 res = `קצת מביך... לא מצאתי מידע ישיר על ${term}`
             }
-            await context.close(); 
-            RENDER_CATCH.set(url, res)
-            return res
-        } catch (error) {
-            RENDER_CATCH.set(url, res)
-            console.log(error);
-            await context.close(); 
-            return `נסה לחפש שוב עם שאילתא מדוייקת יותר`
+        } catch (e) {
+            console.log(e.message);
+            res || `נסה לחפש שוב עם שאילתא מדוייקת יותר`
         }
+        RENDER_CATCH.set(url, res)
+        await context.close(); 
+        return res || `נסה לחפש שוב עם שאילתא מדוייקת יותר`
 }
 
 module.exports = googleAnswer
