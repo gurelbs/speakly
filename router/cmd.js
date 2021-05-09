@@ -4,11 +4,11 @@ const googleAnswer = require('./../utils/googleAnswer')
 const router = new express.Router()
 
 router.post('/api/cmd', async (req, res) => {   
-    const data = req.body
+    const data = req.body   
     const {txt} = data
     const answer = await googleAnswer(txt)
     try {
-        res.status(201).send({answer}).end()
+        res.status(200).send({answer}).end()
     } catch (err) {
         res.status(500).send(err).end()
     }
