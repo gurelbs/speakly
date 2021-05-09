@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const RENDER_CATCH = new Map()
-const googleAnswer = async (term) => {
-        const url = `https://google.com/search?q=${term}`
+const googleAnswer = async (term,lang) => {
+        const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         let res = '';
         let foundElement;

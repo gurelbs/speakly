@@ -13,7 +13,7 @@ import tts from './tts'
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const [currentLanguages, setCurrentLanguages] = useState('')
+    const [currentLanguages, setCurrentLanguages] = useState('he-il')
     const [textData, setTextData] = useState({})
     const [textAnswer, setTextAnswer] = useState('')
     const [audioAnswer, setAudioAnswer] = useState('')
@@ -24,9 +24,11 @@ const Recognition =  () => {
     let {text,interim,final} = textData;
     const fetchTextAnswer = async () => {
         try {
+            console.log(currentLanguages);
             const {data} = await api.post('/cmd',  {
                 CancelToken: source.token,
-                txt: final
+                txt: final,
+                lang: currentLanguages
             })
             console.log(data.answer);
             return data.answer
