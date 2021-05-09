@@ -24,18 +24,11 @@ const Recognition =  () => {
     let {text,interim,final} = textData;
     const fetchTextAnswer = async () => {
         try {
-            const {data} = await api.post('/cmd', { 
-                cancelToken: source.token,
-                txt: final
-            })
+            const {data} = await api.post('/cmd',  {txt: final})
             console.log(data.answer);
             return data.answer
         } catch (e) {
-            if (axios.isCancel(e)) {
-                console.log('Request canceled', e.message)
-            } else {
-                console.log('there is some problem:',e.message)
-            }
+            console.log(e.message);
         }
     }
     const clear = () => {
