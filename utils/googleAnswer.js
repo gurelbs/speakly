@@ -5,11 +5,13 @@ const googleAnswer = async (term) => {
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         let res = '';
         let foundElement;
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            userDataDir: "./user_data2",
+        });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
         const navigationPromise = page.waitForNavigation();
-        await page.goto(url);
+        await page.goto(url,{waitUntil: 'networkidle2'});
         try {
             await navigationPromise;
             let answerBox = await page.$('.xpdopen .kp-header div')
