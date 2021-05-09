@@ -19,7 +19,7 @@ const googleAnswer = async (term) => {
         let calc = await page.$('#cwos')
         let weather = await page.$('#wob_wc')
         try {
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout:10000});
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
             if (foundElement) {
                 if (answerBox){
                     await navigationPromise;
@@ -74,10 +74,10 @@ const googleAnswer = async (term) => {
             RENDER_CATCH.set(url, res)
             return res
         } catch (error) {
-            res = `נסה לחפש שוב עם שאילתא מדוייקת יותר`
             RENDER_CATCH.set(url, res)
+            console.log(error);
             await context.close(); 
-            return res
+            return `נסה לחפש שוב עם שאילתא מדוייקת יותר`
         }
 }
 

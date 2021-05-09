@@ -15,8 +15,8 @@ const Recognition =  () => {
     const source = CancelToken.source();
     const [currentLanguages, setCurrentLanguages] = useState('')
     const [textData, setTextData] = useState({})
-    const [textAnswer, setTextAnswer] = useState(null)
-    const [audioAnswer, setAudioAnswer] = useState(null)
+    const [textAnswer, setTextAnswer] = useState('')
+    const [audioAnswer, setAudioAnswer] = useState('')
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -28,6 +28,7 @@ const Recognition =  () => {
                 cancelToken: source.token,
                 txt: final
             })
+            console.log(data.answer);
             return data.answer
         } catch (e) {
             if (axios.isCancel(e)) {
@@ -97,6 +98,7 @@ const Recognition =  () => {
     }, [final])
     useEffect(() => {
         if (final !== '' && text !== '' && interim === ''){
+            resetTranscript()
             const fetchData = async () => {
                 console.log('fetching Data with auto cancellation token.');
                 const answer = await fetchTextAnswer()
