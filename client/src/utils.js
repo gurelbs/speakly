@@ -1,12 +1,12 @@
-function toArrayBuffer(buffer) {
-    const ab = new ArrayBuffer(buffer.length);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < buffer.length; i++) {
-        view[i] = buffer[i];
+function bufferToArrayBuffer(buffer) {
+    var ab = new ArrayBuffer(buffer.length);
+    var view = new Uint8Array(ab);
+    for (var i = 0; i < buffer.length; ++i) {
+      view[i] = buffer[i];
     }
     return ab;
-}
+  }
 
 export {
-    toArrayBuffer,
+    bufferToArrayBuffer,
 }

@@ -1,4 +1,4 @@
-import axios from 'axios'
+const  axios = require('axios')
 let url;
 
 if (process.env.NODE_ENV === 'development'){
@@ -9,8 +9,7 @@ if (process.env.NODE_ENV === 'development'){
 
 
 const api = axios.create({
-    baseURL: url,
-    responseType: "json"
+    baseURL: url
 })
 
-export default api
+module.exports = api

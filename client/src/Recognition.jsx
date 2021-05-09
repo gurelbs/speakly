@@ -1,14 +1,12 @@
-import url from 'url'
-import {toArrayBuffer} from './utils'
-import React,{useEffect, useState} from 'react'
+import {bufferToArrayBuffer} from './utils'
+import React,{useEffect, useState,useRef} from 'react'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
-import { googleSearch, wikiSearch, youtubeSearch } from './Commands/Commends'
+import { googleSearch, wikiSearch, youtubeSearch,playRadio } from './Commands/Commends'
 import axios from 'axios'
 import api from './api/api'
 import Languages from './Languages'
 import allLanguagesList from './languagesList'
 import Spinner from './Spinner'
-import tts from './tts'
 
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
@@ -16,7 +14,7 @@ const Recognition =  () => {
     const [currentLanguages, setCurrentLanguages] = useState('he-il')
     const [textData, setTextData] = useState({})
     const [textAnswer, setTextAnswer] = useState('')
-    const [audioAnswer, setAudioAnswer] = useState('')
+    // const [audioAnswer, setAudioAnswer] = useState('')
     const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -24,7 +22,6 @@ const Recognition =  () => {
     let {text,interim,final} = textData;
     const fetchTextAnswer = async () => {
         try {
-            console.log(currentLanguages);
             const {data} = await api.post('/cmd',  {
                 CancelToken: source.token,
                 txt: final,
@@ -36,6 +33,29 @@ const Recognition =  () => {
             console.log(e.message);
         }
     }
+    // const getAudioContext =  () => {
+    //     AudioContext = window.AudioContext || window.webkitAudioContext;
+    //     const audioContent = new AudioContext();
+    //     return audioContent;
+    //   };
+      
+    // const fetchAudioAnswer = async () => {
+    //     let apiURL = `http://api.voicerss.org/?key=2a0ec72724104343b35809b65a8634f8&hl=he-il&c=MP3&f=16khz_16bit_stereo&src=שלום&ssml=false&b64=false`;
+    //     try {
+    //         console.log(currentLanguages);
+    //         const {data} = await api.post(apiURL)
+    //         console.log(data);
+    //         let ab = bufferToArrayBuffer(data)
+    //         const audioContext = getAudioContext();
+    //         const audioBuffer = await audioContext.decodeAudioData(ab);
+    //         const source = audioContext.createBufferSource();
+    //         source.buffer = audioBuffer;
+    //         source.connect(audioContext.destination);
+    //         source.start();
+    //     } catch (e) {
+    //         console.log(e.message);
+    //     }
+    // }
     const clear = () => {
         resetTranscript()
         setTextAnswer('')
@@ -50,9 +70,11 @@ const Recognition =  () => {
     useEffect(() => {
         if (interimTranscript === 'רמי') return clear()
     }, [interimTranscript])
+
     useEffect(() => {
         if (interimTranscript === 'רענן את הדף') return window.location.reload()
     }, [interimTranscript])
+
     useEffect(() => {
         if (interimTranscript === 'לך לישון') {
             setIsLoading(false)
@@ -61,39 +83,18 @@ const Recognition =  () => {
             clear()
         }
     }, [interimTranscript])
+
     useEffect(() => {
         if (interimTranscript.includes('מחק הכל')) return clear() + console.clear()
     }, [interimTranscript])
+
     useEffect(() => {
-        let id;
-        if (final?.startsWith('חפש בגוגל')){
-            id = setTimeout( () => {
-                googleSearch(final)
-                clear()
-            } ,200)
-        }
-        return () => clearTimeout(id)
+        if (final?.startsWith('חפש בגוגל')) googleSearch(final) 
+        else if (final?.startsWith('חפש בויקיפדיה')) wikiSearch(final)
+        else if (final?.startsWith('חפש ביוטיוב')) youtubeSearch(final)
+        else if (final?.startsWith('פתח רדיו')) playRadio()
     }, [final])
-    useEffect(() => {
-        let id;
-        if (final?.startsWith('חפש בויקיפדיה')){
-            id = setTimeout( () => {
-                wikiSearch(final)
-                clear()
-            } ,200)
-        }
-        return () => clearTimeout(id)
-    }, [final])
-    useEffect(() => {
-        let id;
-        if (final?.startsWith('חפש ביוטיוב')){
-            id = setTimeout( () => {
-                youtubeSearch(final)
-                clear()
-            } ,200)
-        }
-        return () => clearTimeout(id)
-    }, [final])
+
     useEffect(() => {
         if (final !== '' && text !== '' && interim === ''){
             resetTranscript()
@@ -101,24 +102,13 @@ const Recognition =  () => {
                 console.log('fetching Data with auto cancellation token.');
                 const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
-                tts.speech({
-                    key: '2a0ec72724104343b35809b65a8634f8',
-                    // key: process.env.REACT_APP_VOICE_RSS_API,
-                    src: answer,
-                    hl: 'he-il',
-                    ssl: true,
-                    callback (error, content) {
-                        setAudioAnswer(error || content)
-                    }
-                });
+                // fetchAudioAnswer()
             }
             fetchData()
         }
         return () => source.cancel('Operation canceled by the user.');
     }, [final,interim,text])
-    useEffect(() => {
-        console.log(audioAnswer);
-    }, [audioAnswer])
+
     useEffect(() => {
         const ssIsWork = SpeechRecognition.browserSupportsSpeechRecognition()
         if (!ssIsWork) console.log('browser not supported');
@@ -129,13 +119,14 @@ const Recognition =  () => {
             final: finalTranscript
         })
     },[transcript,interimTranscript,finalTranscript,isSleep])
+
   return (
       <div>
         <p><b>תרגום:</b> {text}</p>
         <p><b>זיהוי קולי:</b> {interim}</p>
         <p><b>תרגום סופי:</b> {final}</p>
-        {/* <audio controls>
-            <source src={audioUrl} autoPlay type='audio/mp3' />
+        {/* <audio ref={audioRef} autoPlay onChange={handleAudio}>
+            <source src=''/>
         </audio> */}
         <div style={{direction: 'rtl', textAlign: 'center'}}>
             {(isLoading && <Spinner/>) || ''}
