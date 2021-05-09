@@ -5,7 +5,9 @@ const googleAnswer = async (term) => {
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         let res;
         let foundElement;
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            ignoreDefaultArgs: ['--disable-extensions'],
+        });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
         const navigationPromise = page.waitForNavigation({waitUntil: "domcontentloaded"});
