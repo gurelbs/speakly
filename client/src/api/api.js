@@ -2,9 +2,9 @@ import axios from 'axios'
 let url;
 
 if (process.env.NODE_ENV === 'development'){
-    url = 'http://localhost:5000/api'
+    url = 'http://localhost:5000/api/'
 } else {
-    url = 'https://speakly.cf/api'
+    url = '/api/'
 }
 
 

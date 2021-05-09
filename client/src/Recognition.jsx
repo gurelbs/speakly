@@ -24,7 +24,7 @@ const Recognition =  () => {
     let {text,interim,final} = textData;
     const fetchTextAnswer = async () => {
         try {
-            const {data} = await api.post('/cmd', { 
+            const {data} = await api.post('cmd', { 
                 cancelToken: source.token,
                 txt: final
             })
