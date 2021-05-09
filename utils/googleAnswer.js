@@ -6,7 +6,7 @@ const googleAnswer = async (term) => {
         let res = '';
         let foundElement;
         const browser = await puppeteer.launch({
-            userDataDir: "./user_data2",
+            ignoreDefaultArgs: ['--disable-extensions'],
         });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
