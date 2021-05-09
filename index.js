@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const cmd = require('./router/cmd')
 const app = express()
