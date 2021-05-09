@@ -103,11 +103,11 @@ const Recognition =  () => {
                 console.log('fetching Data with auto cancellation token.');
                 const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
-                return tts.speech({
+                tts.speech({
                     key: '2a0ec72724104343b35809b65a8634f8',
-                    // key: process.envREACT_APP_VOICE_RSS_API,
+                    // key: process.env.REACT_APP_VOICE_RSS_API,
                     src: answer,
-                    hl: 'en-us',
+                    hl: 'he-il',
                     ssl: true,
                     callback (error, content) {
                         setAudioAnswer(error || content)
