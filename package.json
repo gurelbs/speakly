@@ -9,7 +9,7 @@
     "start-client": "cd client && npm start",
     "dev": "concurrently \"nodemon index\" \"cd client && npm start\"",
     "start": "node index.js",
-    "heroku-postbuild": "concurrently \"npm i\" \"cd voice-rss-tts && npm i\" \"NPM_CONFIG_PRODUCTION=false npm i --prefix client && npm run build --prefix client\" "
+    "heroku-postbuild": "concurrently \"npm i\" \"NPM_CONFIG_PRODUCTION=false npm i --prefix client && npm run build --prefix client\" "
   },
   "keywords": [],
   "author": "",
