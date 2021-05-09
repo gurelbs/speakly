@@ -9,7 +9,7 @@
     "start-client": "cd client && npm start",
     "dev": "concurrently \"nodemon index\" \"cd client && npm start\"",
     "start": "node index.js",
-    "heroku-postbuild": "concurrently \"npm i\" \"NPM_CONFIG_PRODUCTION=false npm i --prefix client && npm run build --prefix client\" "
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm i --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",
@@ -18,12 +18,10 @@
     "node": "14.x"
   },
   "dependencies": {
-    "axios": "0.21.1",
     "concurrently": "6.0.2",
     "cors": "2.8.5",
     "dotenv": "8.2.0",
     "express": "4.17.1",
-    "puppeteer": "9.0.0",
-    "react-router-dom": "5.2.0"
+    "puppeteer": "9.0.0"
   }
 }

@@ -22,11 +22,11 @@ const Recognition =  () => {
     const [isLoading, setIsLoading] = useState(false)
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
     let {text,interim,final} = textData;
-    const fetchTextAnswer = async (txt) => {
+    const fetchTextAnswer = async () => {
         try {
             const {data} = await api.post('/cmd', { 
                 cancelToken: source.token,
-                txt: txt
+                txt: final
             })
             return data.answer
         } catch (e) {
@@ -99,7 +99,7 @@ const Recognition =  () => {
         if (final !== '' && text !== '' && interim === ''){
             const fetchData = async () => {
                 console.log('fetching Data with auto cancellation token.');
-                const answer = await fetchTextAnswer(final)
+                const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
                 return tts.speech({
                     key: '2a0ec72724104343b35809b65a8634f8',
