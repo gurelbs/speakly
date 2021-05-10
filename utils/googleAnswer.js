@@ -75,11 +75,11 @@ const googleAnswer = async (term,lang) => {
             }
         } catch (e) {
             console.log(e.message);
-            res || `נסה לחפש שוב עם שאילתא מדוייקת יותר`
+            res || `לא הבנתי, אפשר לנסות שוב`
         }
         RENDER_CATCH.set(url, res)
         await context.close(); 
-        return res || `נסה לחפש שוב עם שאילתא מדוייקת יותר`
+        return res || `לא הבנתי, אפשר לנסות שוב`
 }
 
 module.exports = googleAnswer
