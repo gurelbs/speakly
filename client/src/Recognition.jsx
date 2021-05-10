@@ -81,12 +81,12 @@ const Recognition =  () => {
                 console.log('fetching Data with auto cancellation token.');
                 const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
-                let u = new SpeechSynthesisUtterance();
-                u.text = answer;
-                speechSynthesis.speak(u);
+                let u = new SpeechSynthesisUtterance(answer);
+                let talk = speechSynthesis
+                talk.speak(u);
                 setInterval(() => {
-                    if (speechSynthesis.speaking) resetTranscript()
-                }, 10);
+                    if (talk.speaking) resetTranscript()
+                }, 100);
                 setIsSleep(false)
             }
             fetchData()

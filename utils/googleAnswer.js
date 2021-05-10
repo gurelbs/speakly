@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const RENDER_CATCH = new Map()
 const googleAnswer = async (term,lang) => {
+    
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         let res = '';
@@ -11,6 +12,9 @@ const googleAnswer = async (term,lang) => {
         });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
+        await page.setExtraHTTPHeaders({
+            'Accept-Language': lang
+        })
         const navigationPromise = page.waitForNavigation();
         await page.goto(url,{waitUntil: 'networkidle2'});
         try {
@@ -75,7 +79,7 @@ const googleAnswer = async (term,lang) => {
             }
         } catch (e) {
             console.log(e.message);
-            res || `לא הבנתי, אפשר לנסות שוב`
+            return res || `לא הבנתי, אפשר לנסות שוב`
         }
         RENDER_CATCH.set(url, res)
         await context.close(); 
