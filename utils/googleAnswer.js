@@ -7,14 +7,15 @@ const googleAnswer = async (term,lang) => {
         let res = '';
         let foundElement;
         const browser = await puppeteer.launch({
-            args: ['--no-sandbox'],
+            headless: false,
+            args: [
+                '--no-sandbox',
+                `--lang=${lang}`
+            ],
             ignoreDefaultArgs: ['--disable-extensions'],
         });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
-        await page.setExtraHTTPHeaders({
-            'Accept-Language': lang
-        })
         const navigationPromise = page.waitForNavigation();
         await page.goto(url,{waitUntil: 'networkidle2'});
         try {

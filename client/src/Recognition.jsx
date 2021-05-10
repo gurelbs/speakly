@@ -82,10 +82,9 @@ const Recognition =  () => {
                 const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
                 let u = new SpeechSynthesisUtterance(answer);
-                let talk = speechSynthesis
-                talk.speak(u);
+                speechSynthesis.speak(u);
                 setInterval(() => {
-                    if (talk.speaking) resetTranscript()
+                    if (speechSynthesis.speaking) return resetTranscript()
                 }, 100);
                 setIsSleep(false)
             }
