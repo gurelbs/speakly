@@ -5,9 +5,9 @@ const router = new express.Router()
 
 router.post('/api/cmd', async (req, res) => {   
     const data = req.body
-    const {txt} = data
+    const {txt,lang} = data
     try {
-        let answer = await googleAnswer(txt)
+        let answer = await googleAnswer(txt,lang)
         res.status(201).send({answer}).end()
     } catch (err) {
         res.status(500).end(err)

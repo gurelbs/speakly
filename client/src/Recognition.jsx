@@ -84,8 +84,8 @@ const Recognition =  () => {
                 let u = new SpeechSynthesisUtterance(answer);
                 speechSynthesis.speak(u);
                 setInterval(() => {
-                    if (speechSynthesis.speaking) return resetTranscript()
-                }, 100);
+                    if (speechSynthesis.speaking) resetTranscript()
+                }, 10);
                 setIsSleep(false)
             }
             fetchData()
@@ -106,7 +106,10 @@ const Recognition =  () => {
             final: finalTranscript
         })
     },[transcript,interimTranscript,finalTranscript,isSleep])
-
+    const toggleRecognitionBtn = () => {
+        handleReco()
+        setToggleBtn(!toggleBtn)
+    }
   return (
       <div>
         <p><b>תרגום:</b> {text}</p>
@@ -118,12 +121,12 @@ const Recognition =  () => {
         <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer}</h1>
         <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
         <div>
-            <button onClick={() => handleReco()}>{!toggleBtn ? 'עצרי' : 'התחילי'}</button>
+            <button onClick={() => toggleRecognitionBtn}>{!toggleBtn ? 'עצרי' : 'התחילי'}</button>
         </div>
         <button 
             disabled={(text !== '' || !toggleBtn) ? false : true}
             onClick={() => fetchTextAnswer(transcript)}>דבר</button>
-        <button onClick={clear}>מחק</button>
+        <button onClick={() => clear()}>מחק</button>
       </div>
   )
 }
