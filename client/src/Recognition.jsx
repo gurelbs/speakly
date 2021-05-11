@@ -46,6 +46,18 @@ const Recognition =  () => {
     useEffect(() => {
         if (interimTranscript === 'כרמית') return clear()
     }, [interimTranscript])
+    useEffect(() => {
+        let id;
+        if (final?.includes('מוזיקה אקראית')) {
+            let u = new SpeechSynthesisUtterance('אוקיי, אני מפעילה מוזיקה אקראית מיוטיוב');
+                speechSynthesis.speak(u);
+                id = setInterval(() => {
+                    if (speechSynthesis.speaking) resetTranscript()
+                }, 10);
+            return window.open('https://stackoverflow.com/index.php')
+        }
+        return () => clearInterval(id)
+    }, [final])
 
     useEffect(() => {
         if (interimTranscript === 'רענני את הדף') return window.location.reload()
@@ -57,6 +69,7 @@ const Recognition =  () => {
             resetTranscript()
             setIsSleep(true)
             clear()
+            return SpeechRecognition.abortListening()
 
         }
     }, [interimTranscript])
@@ -111,10 +124,13 @@ const Recognition =  () => {
         setToggleBtn(!toggleBtn)
     }
   return (
-      <div>
+      <div className='page'>
+          <div>
         <p><b>תרגום:</b> {text}</p>
         <p><b>זיהוי קולי:</b> {interim}</p>
         <p><b>תרגום סופי:</b> {final}</p>
+
+          </div>
         <div style={{direction: 'rtl', textAlign: 'center'}}>
             {(isLoading && <Spinner/>) || ''}
         </div>
