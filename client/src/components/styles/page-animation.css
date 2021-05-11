@@ -2,13 +2,8 @@
     position: absolute;
     overflow: hidden;
     height: auto;
+    max-width:100% ;
     min-height: calc(100% - 64px);
-    width: 100%;
-    margin: 0 auto;
-    /* padding-right: 240px; */
-    display: flex;
-    justify-content: center;
-    place-items: center;
 }
 .page-enter {
     opacity: 0;

@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Route, Switch } from "react-router-dom";
 // components
 import HomePage from './components/HomePage'
 import NotFound from './components/NotFound'
-import Recognition from './Recognition'
+import Recognition from './components/Recognition'
 import Pacman from './components/Pacman'
 import Translator from './components/Translator'
 import Playground from './components/Playground'

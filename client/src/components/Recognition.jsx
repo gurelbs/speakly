@@ -1,12 +1,15 @@
 import React,{useEffect, useState} from 'react'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
-import { googleSearch, wikiSearch, youtubeSearch,playRadio } from './Commands/Commends'
+import { googleSearch, wikiSearch, youtubeSearch,playRadio } from './../Commands/Commends'
 import axios from 'axios'
-import api from './api/api'
-import CheckBtn from './components/CheckBtn'
-import './spinner.css'
-// import Languages from './Languages'
-// import allLanguagesList from './languagesList'
+import api from './../api/api'
+import CheckBtn from './CheckBtn'
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
@@ -17,7 +20,9 @@ const Recognition =  () => {
     const [isLoading, setIsLoading] = useState(false)
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
     let {text,interim,final} = textData;
+    const useStyle = makeStyles({
 
+    })
     const fetchTextAnswer = async () => {
         try {
             const {data} = await api.post('/cmd',  {
@@ -119,30 +124,34 @@ const Recognition =  () => {
     },[transcript,interimTranscript,finalTranscript,isSleep])
 
   return (
-      <div className='page'>
-          <div>
-                <CheckBtn/>
-            {/* : <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer }</h1>} */}
-          </div>
-        {/* <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer !== '' ? textAnswer : <Spinner/>}</h1> */}
-          {/* <div>
-        <p><b>תרגום:</b> {text}</p>
-        <p><b>זיהוי קולי:</b> {interim}</p>
-        <p><b>תרגום סופי:</b> {final}</p>
-
-          </div>
-        <div style={{direction: 'rtl', textAlign: 'center'}}>
-            {(isLoading && <Spinner/>) || ''}
-        </div> */}
-        {/* <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
-        <div>
-            <button onClick={() => toggleRecognitionBtn}>{!toggleBtn ? 'עצרי' : 'התחילי'}</button>
+      
+        <div className='page'>
+            <React.Fragment>
+      <CssBaseline />
+      <Container>
+            <CheckBtn/>
+            <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer }</h1>
+      </Container>
+    </React.Fragment>
         </div>
-        <button 
-            disabled={(text !== '' || !toggleBtn) ? false : true}
-            onClick={() => fetchTextAnswer(transcript)}>דבר</button>
-        <button onClick={() => clear()}>מחק</button> */}
-      </div>
+        // // {/* <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer !== '' ? textAnswer : <Spinner/>}</h1> */}
+        //   {/* <div>
+        // <p><b>תרגום:</b> {text}</p>
+        // <p><b>זיהוי קולי:</b> {interim}</p>
+        // <p><b>תרגום סופי:</b> {final}</p>
+
+        //   </div>
+        // <div style={{direction: 'rtl', textAlign: 'center'}}>
+        //     {(isLoading && <Spinner/>) || ''}
+        // </div> */}
+        // {/* <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
+        // <div>
+        //     <button onClick={() => toggleRecognitionBtn}>{!toggleBtn ? 'עצרי' : 'התחילי'}</button>
+        // </div>
+        // <button 
+        //     disabled={(text !== '' || !toggleBtn) ? false : true}
+        //     onClick={() => fetchTextAnswer(transcript)}>דבר</button>
+        // <button onClick={() => clear()}>מחק</button> */}
   )
 }
 export default Recognition
