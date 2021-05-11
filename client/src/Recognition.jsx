@@ -3,16 +3,16 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { googleSearch, wikiSearch, youtubeSearch,playRadio } from './Commands/Commends'
 import axios from 'axios'
 import api from './api/api'
-import Languages from './Languages'
-import allLanguagesList from './languagesList'
-import Spinner from './Spinner'
+import CheckBtn from './components/CheckBtn'
+import './spinner.css'
+// import Languages from './Languages'
+// import allLanguagesList from './languagesList'
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const [currentLanguages, setCurrentLanguages] = useState('he-il')
     const [textData, setTextData] = useState({})
     const [textAnswer, setTextAnswer] = useState('')
-    const [toggleBtn, setToggleBtn] = useState(true)
     const [isSleep, setIsSleep] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
@@ -32,20 +32,16 @@ const Recognition =  () => {
         }
     }
     const clear = () => {
+        setIsLoading(true)
         resetTranscript()
         setTextAnswer('')
         setIsLoading(false)
-        SpeechRecognition.abortListening()
-    }
-    const handleReco = () => {
-        setToggleBtn(toggleBtn => !toggleBtn)
-        return toggleBtn && !isSleep
-            ? SpeechRecognition.startListening({continuous: true})
-            : SpeechRecognition.stopListening({continuous: false})
     }
     useEffect(() => {
-        if (interimTranscript === 'כרמית') return clear()
-    }, [interimTranscript])
+        if (interim?.includes('רותם')) {
+            clear()
+        }
+    }, [interim])
     useEffect(() => {
         let id;
         if (final?.includes('מוזיקה אקראית')) {
@@ -64,15 +60,17 @@ const Recognition =  () => {
     }, [interimTranscript])
 
     useEffect(() => {
-        if (interimTranscript === 'לכי לישון') {
-            setIsLoading(false)
-            resetTranscript()
-            setIsSleep(true)
-            clear()
-            return SpeechRecognition.abortListening()
-
+        if (interim?.includes('לכי לישון')) {
+            let u = new SpeechSynthesisUtterance('לילה טוב');
+                speechSynthesis.speak(u);
+                if (speechSynthesis.speaking) {
+                    resetTranscript()
+                    clear()
+                } else {
+                    setTimeout(() => SpeechRecognition.abortListening(), 100);
+                }
         }
-    }, [interimTranscript])
+    }, [interim])
 
     useEffect(() => {
         if (interimTranscript.includes('מחקי הכל')) return clear() + console.clear()
@@ -90,11 +88,13 @@ const Recognition =  () => {
         if (validator){
             resetTranscript()
             const fetchData = async () => {
+                setIsLoading(true)
                 setIsSleep(true)
                 console.log('fetching Data with auto cancellation token.');
                 const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
                 let u = new SpeechSynthesisUtterance(answer);
+                setIsLoading(false)
                 speechSynthesis.speak(u);
                 setInterval(() => {
                     if (speechSynthesis.speaking) resetTranscript()
@@ -109,8 +109,6 @@ const Recognition =  () => {
     }, [final,interim,text])
 
     useEffect(() => {
-        const ssIsWork = SpeechRecognition.browserSupportsSpeechRecognition()
-        if (!ssIsWork) return console.log('browser not supported');
         if (!isSleep) SpeechRecognition.startListening({continuous:true})
         else return SpeechRecognition.stopListening()
         setTextData({
@@ -119,13 +117,15 @@ const Recognition =  () => {
             final: finalTranscript
         })
     },[transcript,interimTranscript,finalTranscript,isSleep])
-    const toggleRecognitionBtn = () => {
-        handleReco()
-        setToggleBtn(!toggleBtn)
-    }
+
   return (
       <div className='page'>
           <div>
+                <CheckBtn/>
+            {/* : <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer }</h1>} */}
+          </div>
+        {/* <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer !== '' ? textAnswer : <Spinner/>}</h1> */}
+          {/* <div>
         <p><b>תרגום:</b> {text}</p>
         <p><b>זיהוי קולי:</b> {interim}</p>
         <p><b>תרגום סופי:</b> {final}</p>
@@ -133,16 +133,15 @@ const Recognition =  () => {
           </div>
         <div style={{direction: 'rtl', textAlign: 'center'}}>
             {(isLoading && <Spinner/>) || ''}
-        </div>
-        <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer}</h1>
-        <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
+        </div> */}
+        {/* <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
         <div>
             <button onClick={() => toggleRecognitionBtn}>{!toggleBtn ? 'עצרי' : 'התחילי'}</button>
         </div>
         <button 
             disabled={(text !== '' || !toggleBtn) ? false : true}
             onClick={() => fetchTextAnswer(transcript)}>דבר</button>
-        <button onClick={() => clear()}>מחק</button>
+        <button onClick={() => clear()}>מחק</button> */}
       </div>
   )
 }
