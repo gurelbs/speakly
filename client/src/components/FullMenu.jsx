@@ -16,18 +16,16 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
 // custom
 import Logo from './Logo'
 import GamepadIcon from '@material-ui/icons/Gamepad';
-
+import HomeIcon from '@material-ui/icons/Home';
+import SettingsVoiceIcon from '@material-ui/icons/SettingsVoice';
+import MessageIcon from '@material-ui/icons/Message';
+import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,6 +64,18 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: theme.spacing(0,1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
   drawerClose: {
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
@@ -93,24 +103,24 @@ const FullMenu = (props) => {
     const itemList = [
         {
             text: 'בית', 
-            icon: <GamepadIcon/>,
+            icon: <HomeIcon/>,
             onClick: () => history.push('/')
         },
     ];
     const playGroundItemList = [
       {
-        text: 'תרגומון', 
-        icon: <GamepadIcon/>,
+        text: 'מתמלל מסמכים', 
+        icon: <MessageIcon/>,
         onClick: () => history.push('/playground/translator')
       },
       {
         text: 'עוזר קולי', 
-        icon: <GamepadIcon/>,
+        icon: <SettingsVoiceIcon/>,
         onClick: () => history.push('/playground/recognition')
       },
       {
         text: 'Pac-Man', 
-        icon: <GamepadIcon/>,
+        icon: <SportsEsportsIcon/>,
         onClick: () => history.push('/playground/pacman')
       },
     ]
@@ -166,7 +176,7 @@ const FullMenu = (props) => {
                   <ListItemText primary={text} />
                 </ListItem>
             })}
-              <ListItem button onClick={handleClick}>
+              <ListItem button variant="outlined" onClick={handleClick}>
                 <ListItemIcon>
                   <GamepadIcon/>
                 </ListItemIcon>

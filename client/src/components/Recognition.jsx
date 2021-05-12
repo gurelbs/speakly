@@ -10,19 +10,23 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const [currentLanguages, setCurrentLanguages] = useState('he-il')
     const [textData, setTextData] = useState({})
     const [textAnswer, setTextAnswer] = useState('')
-    const [isSleep, setIsSleep] = useState(false)
+    const [startRecoBtn, setStartRecoBtn] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isBuildCmd, setIsBuildCmd] = useState(false)
+
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
     let {text,interim,final} = textData;
-    const useStyle = makeStyles({
-
-    })
+    const handleRecognitionBtn = () => setStartRecoBtn(reco => !reco)
     const fetchTextAnswer = async () => {
         try {
             const {data} = await api.post('/cmd',  {
@@ -37,14 +41,12 @@ const Recognition =  () => {
         }
     }
     const clear = () => {
-        setIsLoading(true)
-        resetTranscript()
         setTextAnswer('')
-        setIsLoading(false)
+        resetTranscript()
     }
     useEffect(() => {
         if (interim?.includes('רותם')) {
-            clear()
+            return clear()
         }
     }, [interim])
     useEffect(() => {
@@ -67,13 +69,17 @@ const Recognition =  () => {
     useEffect(() => {
         if (interim?.includes('לכי לישון')) {
             let u = new SpeechSynthesisUtterance('לילה טוב');
-                speechSynthesis.speak(u);
-                if (speechSynthesis.speaking) {
-                    resetTranscript()
-                    clear()
-                } else {
-                    setTimeout(() => SpeechRecognition.abortListening(), 100);
-                }
+            speechSynthesis.speak(u);
+            resetTranscript()
+            clear()
+        }
+    }, [interim])
+    useEffect(() => {
+        if (interim?.startsWith('עצור' ||'עצרי')) {
+            resetTranscript()
+            clear()
+            speechSynthesis.cancel()
+            SpeechRecognition.stopListening()
         }
     }, [interim])
 
@@ -82,76 +88,107 @@ const Recognition =  () => {
     }, [interimTranscript])
 
     useEffect(() => {
-        if (final?.startsWith('חפשי בגוגל')) googleSearch(final) 
-        else if (final?.startsWith('חפשי בויקיפדיה')) wikiSearch(final)
-        else if (final?.startsWith('חפשי ביוטיוב')) youtubeSearch(final)
-        else if (final?.startsWith('פתחי רדיו')) playRadio()
-    }, [final])
+        let startWithGoogle = ['חפשי בגוגל','חפש בגוגל']
+        // let startWithGoogle = ['חפשי בגוגל','חפש בגוגל']
+        let searchIsValid = text?.startsWith(startWithGoogle)
+        if (searchIsValid) {
+            setIsBuildCmd(true)
+            clear()
+            googleSearch(text)
+            setIsBuildCmd(false)
+        } 
+        else if (final?.startsWith('חפשי בויקיפדיה')){return clear() + wikiSearch(final)} 
+        else if (final?.startsWith('חפשי ביוטיוב')) {return clear() + youtubeSearch(final)}
+        else if (final?.startsWith('פתחי רדיו')) {return clear() + playRadio()}
+    }, [text])
 
     useEffect(() => {
-        let validator = final !== '' && text !== '' && final === text && interim === '';
+        let validator = final !== '' 
+            && text !== '' 
+            && final === text 
+            && interim === ''
+            && !isBuildCmd;
+        let id;
         if (validator){
             resetTranscript()
             const fetchData = async () => {
                 setIsLoading(true)
-                setIsSleep(true)
                 console.log('fetching Data with auto cancellation token.');
                 const answer = await fetchTextAnswer()
                 setTextAnswer(answer)
                 let u = new SpeechSynthesisUtterance(answer);
                 setIsLoading(false)
-                speechSynthesis.speak(u);
+                id = speechSynthesis.speak(u);
                 setInterval(() => {
                     if (speechSynthesis.speaking) resetTranscript()
                 }, 10);
-                setIsSleep(false)
             }
             fetchData()
+            clear()
         }
         return () => {
-            return source.cancel('Operation canceled by the user.');
+            setInterval(id)
+            source.cancel('Operation canceled by the user.');
         }
     }, [final,interim,text])
 
     useEffect(() => {
-        if (!isSleep) SpeechRecognition.startListening({continuous:true})
-        else return SpeechRecognition.stopListening()
-        setTextData({
-            text: transcript,
-            interim: interimTranscript,
-            final: finalTranscript
-        })
-    },[transcript,interimTranscript,finalTranscript,isSleep])
-
-  return (
-      
-        <div className='page'>
-            <React.Fragment>
-      <CssBaseline />
-      <Container>
-            <CheckBtn/>
-            <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer }</h1>
-      </Container>
-    </React.Fragment>
-        </div>
-        // // {/* <h1 style={{direction: 'rtl', textAlign: 'center'}}>{textAnswer !== '' ? textAnswer : <Spinner/>}</h1> */}
-        //   {/* <div>
-        // <p><b>תרגום:</b> {text}</p>
-        // <p><b>זיהוי קולי:</b> {interim}</p>
-        // <p><b>תרגום סופי:</b> {final}</p>
-
-        //   </div>
-        // <div style={{direction: 'rtl', textAlign: 'center'}}>
-        //     {(isLoading && <Spinner/>) || ''}
-        // </div> */}
-        // {/* <Languages cb={e => setCurrentLanguages(e.target.value)} languagesList={allLanguagesList}/>
-        // <div>
-        //     <button onClick={() => toggleRecognitionBtn}>{!toggleBtn ? 'עצרי' : 'התחילי'}</button>
-        // </div>
-        // <button 
-        //     disabled={(text !== '' || !toggleBtn) ? false : true}
-        //     onClick={() => fetchTextAnswer(transcript)}>דבר</button>
-        // <button onClick={() => clear()}>מחק</button> */}
+            setTextData({
+                text: transcript,
+                interim: interimTranscript,
+                final: finalTranscript
+            })
+    },[transcript,interimTranscript,finalTranscript])
+    const useStyles = makeStyles((theme) => ({
+        root: {
+          flexGrow: 1,
+        },
+        paper: {
+          padding: theme.spacing(2),
+          textAlign: 'center',
+          color: theme.palette.text.secondary,
+        },
+        backdrop: {
+            zIndex: theme.zIndex.drawer + 1,
+            color: '#fff',
+          },
+      }));
+      const classes = useStyles()
+      useEffect(() => {
+          if (startRecoBtn){
+            return SpeechRecognition.startListening({continuous:true})
+        }
+        return SpeechRecognition.abortListening()
+      }, [startRecoBtn])
+  return ( <React.Fragment>
+        <CssBaseline />
+        <Container fixed className={`page `} >
+        <Grid container className={classes.root} style={{ minHeight: 'calc(100vh - 64px)', width: '100%'}}>
+            <Grid container item xs={12} direction="column" justify="center" alignItems="center">
+            <Box xs={6} position="absolute" display="grid" alignItems="center" style={{flexDirection:'colomn'}} flexGrow={1} top={10} spacing={2}>
+                <br/><code>{!startRecoBtn ? '' : 'זיהוי קולי פעיל'}</code>   
+                <Button 
+                    onClick={handleRecognitionBtn}
+                    disabled={isLoading}
+                    variant="contained"
+                    color="primary">{!startRecoBtn ? 'הפעלה' : 'כיבוי'}</Button> 
+                </Box>
+                <Backdrop className={classes.backdrop} open={isLoading}>
+                <CircularProgress color="inherit" />
+                </Backdrop>
+                <Typography variant="h5"  component="h2" style={{textAlign: 'center',marginTop:'5rem'}}>
+                    {interim}
+                </Typography>
+                <Typography variant="h3" component="h2" style={{textAlign: 'center',width:'80%',padding:'3rem'}}>
+                    {textAnswer}
+                </Typography>
+            </Grid>
+            <Box xs={4} position="absolute" right={1} bottom={1}>
+                <CheckBtn/>
+            </Box>
+        </Grid>
+        </Container>
+        </React.Fragment>
   )
 }
 export default Recognition

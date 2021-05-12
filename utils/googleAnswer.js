@@ -26,8 +26,8 @@ const googleAnswer = async (term,lang) => {
             let finance = await page.$('g-card-section span')
             let calc = await page.$('#cwos')
             let weather = await page.$('#wob_wc')
-            // foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
-            // if (foundElement) {
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
+            if (foundElement) {
                 if (answerBox){
                     await navigationPromise;
                     res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
@@ -41,7 +41,7 @@ const googleAnswer = async (term,lang) => {
                 }
                 if (wikiAnswer && !answerBox){
                     await navigationPromise;
-                    res = await page.evaluate(() => document.querySelector('#kp-wp-tab-overview div span').innerText);
+                    res = await page.evaluate(() => [...document.querySelectorAll("#kp-wp-tab-overview div span")].map(el => el.innerText).join(' ').replace(/(ויקיפדיה|עוד|\/)/g,' '))
                 }
                 if (currency){
                     await navigationPromise;
@@ -74,10 +74,10 @@ const googleAnswer = async (term,lang) => {
                         return `מזג האוויר ב${loc}: ${temp}°, ${desc}. (${date}).`
                     })
                 }
-            // } 
-            // else {
-            //     res = `קצת מביך... לא מצאתי מידע ישיר על ${term}`
-            // }
+            } 
+            else {
+                res = `קצת מביך... לא מצאתי מידע ישיר על ${term}`
+            }
         } catch (e) {
             console.log(e.message);
             return res || `לא הבנתי, אפשר לנסות שוב`

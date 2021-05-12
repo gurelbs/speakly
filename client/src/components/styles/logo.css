@@ -1,6 +1,24 @@
 .secular-font {
     font-family: 'Secular One', sans-serif;
 }
+@import url('https://fonts.googleapis.com/css2?family=Karantina:wght@700&display=swap');
+@import url(//db.onlinewebfonts.com/c/1094504ae47cb9cfa800bc04261c211a?family=Geomanist);
+.logo{
+    margin: 0;
+    font-size: 1.75rem;
+    text-align: center;
+    letter-spacing: 1px;
+    font-family: geomanistregular,Arial,Helvetica,sans-serif;
+    font-family: 'Karantina', cursive;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-text-size-adjust: none;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    font-feature-settings: "liga" 0;
+}
 .logo-size{
     font-size: 150%;
 }
