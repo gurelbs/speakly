@@ -188,11 +188,11 @@ const Recognition =  () => {
             return SpeechRecognition.abortListening()
         }
       }, [startRecoBtn])
-      const handleSound = () => {
-            setSoundOn(sound=>!sound)
-            if (soundOn) speechSynthesis.pause()
-            else speechSynthesis.resume()
-      }
+
+    useEffect(() => {
+        if (soundOn) return speechSynthesis.pause()
+        else return speechSynthesis.resume()
+    }, [soundOn])
 
   return ( <React.Fragment>
         <CssBaseline />
@@ -207,7 +207,7 @@ const Recognition =  () => {
                     variant="contained"
                     color="primary">{!startRecoBtn ? 'הפעלה' : 'כיבוי'}</Button> 
                 <Button 
-                    onClick={handleSound}
+                    onClick={() => setSoundOn(sound=>!sound)}
                     disabled={!startRecoBtn}
                     color="primary">{!soundOn ? <VolumeUpIcon/> : <VolumeOffIcon/>}</Button> 
                 </Box>
