@@ -1,3 +1,9 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  direction: rtl;
+}
 body {
   direction: rtl;
   margin: 0;
@@ -5,7 +11,9 @@ body {
   /* font-family: 'Secular One', sans-serif; */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+code, kbd, pre, samp {
+  font-family: var(--bs-font-monospace);
+  font-size: 1em;
+  direction: rtl !important;
+  unicode-bidi: bidi-override;
 }

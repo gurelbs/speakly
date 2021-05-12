@@ -1,6 +1,6 @@
 .page{
-    position: absolute;
-    overflow: hidden;
+    position: relative;
+    overflow-y: hidden;
     height: auto;
     width: auto;
     max-width: 100%;

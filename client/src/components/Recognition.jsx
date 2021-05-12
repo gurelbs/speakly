@@ -14,6 +14,9 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import VolumeOffIcon from '@material-ui/icons/VolumeOff';
+import PauseIcon from '@material-ui/icons/Pause';
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
@@ -23,6 +26,7 @@ const Recognition =  () => {
     const [startRecoBtn, setStartRecoBtn] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isBuildCmd, setIsBuildCmd] = useState(false)
+    const [soundOn, setSoundOn] = useState(false)
 
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();
     let {text,interim,final} = textData;
@@ -51,12 +55,13 @@ const Recognition =  () => {
     }, [interim])
     useEffect(() => {
         let id;
+        let u;
         if (final?.includes('מוזיקה אקראית')) {
-            let u = new SpeechSynthesisUtterance('אוקיי, אני מפעילה מוזיקה אקראית מיוטיוב');
+            u = new SpeechSynthesisUtterance('בסדר, אני מפעילה מוזיקה אקראית מיוטיוב');
                 speechSynthesis.speak(u);
                 id = setInterval(() => {
                     if (speechSynthesis.speaking) resetTranscript()
-                }, 10);
+                }, 100);
             return window.open('https://stackoverflow.com/index.php')
         }
         return () => clearInterval(id)
@@ -65,21 +70,19 @@ const Recognition =  () => {
     useEffect(() => {
         if (interimTranscript === 'רענני את הדף') return window.location.reload()
     }, [interimTranscript])
+    useEffect(() => {
+        if (interimTranscript === 'עצרי הכל'){
+            SpeechRecognition.abortListening()
+        }
+    }, [interimTranscript])
 
     useEffect(() => {
         if (interim?.includes('לכי לישון')) {
             let u = new SpeechSynthesisUtterance('לילה טוב');
             speechSynthesis.speak(u);
             resetTranscript()
-            clear()
-        }
-    }, [interim])
-    useEffect(() => {
-        if (interim?.startsWith('עצור' ||'עצרי')) {
-            resetTranscript()
-            clear()
-            speechSynthesis.cancel()
-            SpeechRecognition.stopListening()
+            clear();
+            return handleRecognitionBtn()
         }
     }, [interim])
 
@@ -87,28 +90,50 @@ const Recognition =  () => {
         if (interimTranscript.includes('מחקי הכל')) return clear() + console.clear()
     }, [interimTranscript])
 
-    useEffect(() => {
-        let startWithGoogle = ['חפשי בגוגל','חפש בגוגל']
-        // let startWithGoogle = ['חפשי בגוגל','חפש בגוגל']
-        let searchIsValid = text?.startsWith(startWithGoogle)
-        if (searchIsValid) {
-            setIsBuildCmd(true)
-            clear()
-            googleSearch(text)
-            setIsBuildCmd(false)
-        } 
-        else if (final?.startsWith('חפשי בויקיפדיה')){return clear() + wikiSearch(final)} 
-        else if (final?.startsWith('חפשי ביוטיוב')) {return clear() + youtubeSearch(final)}
-        else if (final?.startsWith('פתחי רדיו')) {return clear() + playRadio()}
-    }, [text])
+    // useEffect( () => {
+    //     let startWithGoogle = 'חפשי בגוגל' || 'חפש בגוגל'
+    //     let startWithWiki = 'חפשי בויקיפדיה'||'חפש בויקיפדיה'
+    //     let startWithYoutube = 'חפשי ביוטיוב'||'חפש ביוטיוב'
+    //     let startWithRadio = 'פתח רדיו'||'פתחי רדיו'
+    //     let googleSearchIsValid = text?.startsWith(startWithGoogle) && final !== '';
+    //     let wikiSearchIsValid = text?.startsWith(startWithWiki) && final !== '';
+    //     let youtubeSearchIsValid = text?.startsWith(startWithYoutube)&& final !== '';
+    //     let radioSearchIsValid = text?.startsWith(startWithRadio)&& final !== '';
+    //     setIsBuildCmd(true)
+    //     if (googleSearchIsValid) {
+    //         setStartRecoBtn(false)
+    //         clear()
+    //         resetTranscript()
+    //         googleSearch(final) 
+    //         setStartRecoBtn(true)
+    //     } else if (wikiSearchIsValid){
+    //         setStartRecoBtn(false)
+    //         clear()
+    //         resetTranscript()
+    //         wikiSearch(final)
+    //         setStartRecoBtn(true)
+    //     } else if (youtubeSearchIsValid) {
+    //         setStartRecoBtn(false)
+    //         clear()
+    //         resetTranscript()
+    //         youtubeSearch(final)
+    //         setStartRecoBtn(true)
+    //     } else if (radioSearchIsValid) {
+    //         setStartRecoBtn(false)
+    //         clear()
+    //         resetTranscript()
+    //         playRadio()
+    //         setStartRecoBtn(true)
+    //     }
+    //     setIsBuildCmd(false)
+    // }, [final])
 
     useEffect(() => {
         let validator = final !== '' 
             && text !== '' 
             && final === text 
-            && interim === ''
-            && !isBuildCmd;
-        let id;
+            && interim === '';
+        // if (isBuildCmd) return SpeechRecognition.abortListening()
         if (validator){
             resetTranscript()
             const fetchData = async () => {
@@ -118,7 +143,9 @@ const Recognition =  () => {
                 setTextAnswer(answer)
                 let u = new SpeechSynthesisUtterance(answer);
                 setIsLoading(false)
-                id = speechSynthesis.speak(u);
+                speechSynthesis.speak(u);
+                if (interim === 'עצור') speechSynthesis.pause(u);
+                if (interim === 'המשך') speechSynthesis.resume(u);
                 setInterval(() => {
                     if (speechSynthesis.speaking) resetTranscript()
                 }, 10);
@@ -127,7 +154,6 @@ const Recognition =  () => {
             clear()
         }
         return () => {
-            setInterval(id)
             source.cancel('Operation canceled by the user.');
         }
     }, [final,interim,text])
@@ -157,12 +183,20 @@ const Recognition =  () => {
       useEffect(() => {
           if (startRecoBtn){
             return SpeechRecognition.startListening({continuous:true})
+        } else {
+            speechSynthesis.cancel()
+            return SpeechRecognition.abortListening()
         }
-        return SpeechRecognition.abortListening()
       }, [startRecoBtn])
+      const handleSound = () => {
+            setSoundOn(sound=>!sound)
+            if (soundOn) speechSynthesis.pause()
+            else speechSynthesis.resume()
+      }
+
   return ( <React.Fragment>
         <CssBaseline />
-        <Container fixed className={`page `} >
+        <Container fixed className={`page`} >
         <Grid container className={classes.root} style={{ minHeight: 'calc(100vh - 64px)', width: '100%'}}>
             <Grid container item xs={12} direction="column" justify="center" alignItems="center">
             <Box xs={6} position="absolute" display="grid" alignItems="center" style={{flexDirection:'colomn'}} flexGrow={1} top={10} spacing={2}>
@@ -172,6 +206,10 @@ const Recognition =  () => {
                     disabled={isLoading}
                     variant="contained"
                     color="primary">{!startRecoBtn ? 'הפעלה' : 'כיבוי'}</Button> 
+                <Button 
+                    onClick={handleSound}
+                    disabled={!startRecoBtn}
+                    color="primary">{!soundOn ? <VolumeUpIcon/> : <VolumeOffIcon/>}</Button> 
                 </Box>
                 <Backdrop className={classes.backdrop} open={isLoading}>
                 <CircularProgress color="inherit" />

@@ -20,13 +20,13 @@ const googleAnswer = async (term,lang) => {
         try {
             await navigationPromise;
             let answerBox = await page.$('.xpdopen .kp-header div')
-            let wikiAnswer = await page.$('#kp-wp-tab-overview > div span')
+            let wikiAnswer = await page.$('#kp-wp-tab-overview div span')
             let currency = await page.$('#knowledge-currency__updatable-data-column > div')
             let translate = await page.$('#tw-container #tw-target-text')
             let finance = await page.$('g-card-section span')
             let calc = await page.$('#cwos')
             let weather = await page.$('#wob_wc')
-            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
+            foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc',{timeout:8000});
             if (foundElement) {
                 if (answerBox){
                     await navigationPromise;
@@ -41,7 +41,7 @@ const googleAnswer = async (term,lang) => {
                 }
                 if (wikiAnswer && !answerBox){
                     await navigationPromise;
-                    res = await page.evaluate(() => [...document.querySelectorAll("#kp-wp-tab-overview div span")].map(el => el.innerText).join(' ').replace(/(ויקיפדיה|עוד|\/)/g,' '))
+                    res = await page.evaluate(() => [...document.querySelectorAll("#kp-wp-tab-overview div span")].map(el => el.innerText).join(' ').replace(/(עוד|\/)/g,' '))
                 }
                 if (currency){
                     await navigationPromise;
