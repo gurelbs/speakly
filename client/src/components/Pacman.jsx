@@ -3,8 +3,6 @@ import CardMedia from '@material-ui/core/CardMedia';
 
 export default function Pacmen() {
     return (
-        <CardMedia>
-            <iframe width='100vw' height='100vh' className="container h-100 w-100 d-flex" src='./../pacman/PAC-MAN.html'></iframe>
-        </CardMedia>
+            <iframe style={{minHeight:'50vh',width:'100%'}} className="container-fluid  px-0 d-flex" src='./../pacman/PAC-MAN.html'></iframe>
     )
 }
