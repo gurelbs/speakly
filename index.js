@@ -5,9 +5,10 @@ const app = express()
 const cors = require('cors')
 const { json } = require('express')
 const path = require('path')
-const runPacmen = require('./utils/pacmanMove')
-runPacmen()
-
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 app.use(express.json())
 app.use(cors())
 app.use(cmd)
@@ -19,4 +20,4 @@ if (process.env.NODE_ENV !== 'development'){
 }
 
 const port = process.env.PORT || 5000
-app.listen(port,() => console.log(`server run at http://localhost:${port}`))
+server.listen(port,() => console.log(`server run at http://localhost:${port}`))

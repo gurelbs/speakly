@@ -11,11 +11,11 @@ export default function HomePage() {
     return (
         <Paper elevation={0}>
             {imageLoad ? (
-  <Container className='page  text-center d-flex justify-content-center h-100 p-3 mx-auto flex-column bg-gif h-100 w-100 mx-auto' style={{minWidth:'100%'}}>
+  <Container className='page text-center d-flex justify-content-center h-100 p-3 mx-auto flex-column bg-gif h-100 w-100 mx-auto' style={{minWidth:'100%'}}>
   <div className='jumbotron d-block' style={{minWidth:'calc("100% - 64px")'}}>
       <h1 className="wellcome-msg "><span>ספיקלי</span></h1>
   </div>
-  <div className='container '>
+  <div className='container'>
       <h4 className="cover-txt">מנוע לזיהוי וסינתוז קול <span>בעברית</span></h4>
   </div>
 </Container>
