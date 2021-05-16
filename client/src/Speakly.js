@@ -1,11 +1,12 @@
 import React from 'react'
-import {BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch,Redirect } from "react-router-dom";
+import {v4 as uuid} from 'uuid'
 // components
 import HomePage from './components/HomePage'
 import NotFound from './components/NotFound'
 import Recognition from './components/Recognition'
 import Pacman from './components/Pacman'
-import Translator from './components/Translator'
+import Transcriptor from './components/Transcriptor'
 import Playground from './components/Playground'
 // login - singup components
 import SignUpPage from './components/SignUpPage'
@@ -25,7 +26,7 @@ export default function Speakly() {
     { path: '/login', name: 'login', Component: Login },
     { path: '/playground/recognition', name: 'recognition', Component: Recognition },
     { path: '/playground/pacman', name: 'pacman', Component: Pacman },
-    { path: '/playground/translator', name: 'translator', Component: Translator },
+    { path: '/playground/transcriptor/:id', name: 'translator', Component: Transcriptor },
     { path: '/playground', name: 'playground', Component: Playground },
     { path: '/', name: 'homepage', Component: HomePage },
   ]
@@ -69,6 +70,9 @@ return (
                                   exact
                               />
                   })}
+                  <Route exact path={`/playground/transcriptor`}>
+                    <Redirect to={`/playground/transcriptor/${uuid()}`} />
+                  </Route>
                   <Route component={NotFound}/>
               </Switch>
               </CSSTransition> 

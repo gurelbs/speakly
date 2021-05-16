@@ -81,8 +81,9 @@ const Recognition =  () => {
             let u = new SpeechSynthesisUtterance('לילה טוב');
             speechSynthesis.speak(u);
             resetTranscript()
+            SpeechRecognition.stopListening()
+            SpeechRecognition.abortListening()
             clear();
-            return handleRecognitionBtn()
         }
     }, [interim])
 
@@ -159,11 +160,11 @@ const Recognition =  () => {
     }, [final,interim,text])
 
     useEffect(() => {
-            setTextData({
-                text: transcript,
-                interim: interimTranscript,
-                final: finalTranscript
-            })
+        setTextData({
+            text: transcript,
+            interim: interimTranscript,
+            final: finalTranscript
+        })
     },[transcript,interimTranscript,finalTranscript])
     const useStyles = makeStyles((theme) => ({
         root: {

@@ -111,7 +111,7 @@ const FullMenu = (props) => {
       {
         text: 'מתמלל מסמכים', 
         icon: <MessageIcon/>,
-        onClick: () => history.push('/playground/translator')
+        onClick: () => history.push('/playground/transcriptor')
       },
       {
         text: 'עוזר קולי', 
