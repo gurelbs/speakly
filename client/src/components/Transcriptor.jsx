@@ -34,7 +34,7 @@ export default function Translator() {
         resetTranscript,
         listening,
         browserSupportsSpeechRecognition,
-      } = useSpeechRecognition({clearTranscriptOnListen:true})
+      } = useSpeechRecognition()
     const [textData,setTextData] = useState({})
     const [socket,setSocket] = useState()
     const [quill,setQuill] = useState()
@@ -118,13 +118,13 @@ export default function Translator() {
             <Paper elevation={3} className="controls">
                 <Grid 
                  container
-                 direction="colomn"
+                 direction="column"
                  justify="center"
                  alignItems="center">
                 <IconButton  className='mic-icon' onClick={() => setIsActive(btn => !btn)}>
                     {isActive ? <MicIcon style={{ color: '#ba68c8' }} fontSize="large"/> : <MicOffIcon fontSize="large"/>}
                 </IconButton>
-                    {isActive ? <code className="code-txt">זיהוי קולי פעיל</code> : ''}
+                    {isActive ? <p1 className="code-txt">זיהוי קולי פעיל</p1> : ''}
                 <p className="pre-txt">{interimTranscript}</p>
                 </Grid>
             </Paper>

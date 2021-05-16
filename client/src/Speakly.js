@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid'
 import HomePage from './components/HomePage'
 import NotFound from './components/NotFound'
 import Recognition from './components/Recognition'
-import Pacman from './components/Pacman'
+import Snake from './components/Snake'
 import Transcriptor from './components/Transcriptor'
 import Playground from './components/Playground'
 // login - singup components
@@ -25,7 +25,7 @@ export default function Speakly() {
     { path: '/signup', name: 'signup', Component: SignUpPage },
     { path: '/login', name: 'login', Component: Login },
     { path: '/playground/recognition', name: 'recognition', Component: Recognition },
-    { path: '/playground/pacman', name: 'pacman', Component: Pacman },
+    { path: '/playground/snake', name: 'snake', Component: Snake },
     { path: '/playground/transcriptor/:id', name: 'translator', Component: Transcriptor },
     { path: '/playground', name: 'playground', Component: Playground },
     { path: '/', name: 'homepage', Component: HomePage },
@@ -58,7 +58,7 @@ return (
             <CSSTransition
                 key={location.key}
                 timeout={200}
-                classNames='page'
+                classNames='page text-center d-flex justify-content-center bg-gif mx-auto'
                 unmountOnExit 
             >
             <Switch location={location}>

@@ -119,9 +119,9 @@ const FullMenu = (props) => {
         onClick: () => history.push('/playground/recognition')
       },
       {
-        text: 'Pac-Man', 
+        text: 'סנייק', 
         icon: <SportsEsportsIcon/>,
-        onClick: () => history.push('/playground/pacman')
+        onClick: () => history.push('/playground/snake')
       },
     ]
   return (
