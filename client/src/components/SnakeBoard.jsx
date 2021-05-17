@@ -8,7 +8,7 @@ import CountUp from 'react-countup';
 
 const SnakeBoard = () => {
     const [transcript, setTranscript] = useState('')
-    const [score, setScore] = useState(10)
+    const [score, setScore] = useState(0)
     const { interimTranscript, resetTranscript } = useSpeechRecognition()
       useEffect(() => {
         let id;
@@ -171,12 +171,16 @@ const displayRows = rows.map((row,i) =>
 
 return (
     <div className='snake-board'>
-        <h1><CountUp end={score} /></h1>
-        <ul style={{width:'auto', padding:'0px',listStyleType: 'none'}} className='img500'>
-        { displayRows }
-        </ul>
-        <SnakeRecognition/>
-        <p>ניתן לשחק עם החיצים, או באמצעות הפקודות: למעלה, למטה, ימינה, שמאלה</p>
+        <div  className='snake-board-col big'>
+            <h1><CountUp end={score} /></h1>
+            <ul style={{width:'auto', padding:'0px',listStyleType: 'none'}} className='img500'>
+            { displayRows }
+            </ul>
+        </div>
+        <div className='snake-board-col'>
+            <SnakeRecognition/>
+            <p>ניתן לשחק עם החיצים, או באמצעות הפקודות: למעלה, למטה, ימינה, שמאלה</p>
+        </div>
     </div>
 )
 }

@@ -68,7 +68,7 @@ const Recognition =  () => {
     }, [final])
 
     useEffect(() => {
-        if (interimTranscript === 'רענני את הדף') return window.location.reload()
+        if (interimTranscript === 'טעינת הדף מחדש') return window.location.reload()
     }, [interimTranscript])
     useEffect(() => {
         if (interimTranscript === 'עצרי הכל'){
@@ -195,13 +195,13 @@ const Recognition =  () => {
         else return speechSynthesis.resume()
     }, [soundOn])
 
-  return ( <React.Fragment>
+  return ( <div className="page">
         <CssBaseline />
-        <Container fixed className={`page`} >
+        <Container fixed >
         <Grid container className={classes.root} style={{ minHeight: 'calc(100vh - 64px)', width: '100%'}}>
             <Grid container item xs={12} direction="column" justify="center" alignItems="center">
             <Box xs={6} position="absolute" display="grid" alignItems="center" style={{flexDirection:'colomn'}} flexGrow={1} top={10} spacing={2}>
-                <br/><code>{!startRecoBtn ? '' : 'זיהוי קולי פעיל'}</code>   
+                <br/><p>{!startRecoBtn ? '' : 'זיהוי קולי פעיל'}</p>   
                 <Button 
                     onClick={handleRecognitionBtn}
                     disabled={isLoading}
@@ -227,7 +227,7 @@ const Recognition =  () => {
             </Box>
         </Grid>
         </Container>
-        </React.Fragment>
+        </div>
   )
 }
 export default Recognition
