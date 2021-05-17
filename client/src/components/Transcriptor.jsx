@@ -48,14 +48,14 @@ export default function Translator() {
     },[])
 
     useEffect(() => {
-        if (!quill || !socket) return 
+        if (quill == null || socket == null) return 
         const handler = delta => quill.updateContents(delta)
         socket.on('receive-chenges',handler)
         return () => socket.off('receive-change',handler)
     },[quill,socket])
 
     useEffect(() => {
-        if (!quill || !socket) return 
+        if (quill == null || socket == null) return
         const handler = (delta, oldDelta, source) => {
             if (source !== 'user') return
             socket.emit("send-chenges",delta)
@@ -65,7 +65,7 @@ export default function Translator() {
     },[quill,socket])
 
     useEffect(() => {
-        if (!quill || !socket) return 
+        if (quill == null || socket == null) return 
         socket.once("load-document", document => {
             quill.setContents(document)
             quill.enable()
@@ -74,7 +74,7 @@ export default function Translator() {
     },[quill,socket,documentId])
 
     useEffect(() => {
-        if (!quill || !socket) return
+        if (quill == null || socket == null) return
         const interval = setInterval(() => {
             socket.emit("save-document", quill.getContents())
         }, 2000);
