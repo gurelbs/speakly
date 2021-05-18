@@ -11,7 +11,7 @@ export default function HomePage() {
     useEffect(() => setImageLoad(true), [])
     return ( 
     <>
-        <Container style={{position:'relative'}} className='page text-center d-flex flex-column justify-content-center bg-gif mx-auto' style={{minWidth:'100%'}}>
+        <Container style={{position:'relative'}} className='page text-center d-flex flex-column bg-gif mx-auto' style={{minWidth:'100%'}}>
         <ParticlesBG/>
             <div className="hero">
             <div className='jumbotron d-block' style={{zIndex:'2', minWidth:'calc("100% - 64px")'}}>
@@ -24,10 +24,10 @@ export default function HomePage() {
                 <h4 className="cover-txt">עוזרת דיגיטלית <span>בעברית</span></h4>
             </div>
             </div>
-            <ButtonGroup style={{position:'absolute'}} disableElevation variant="contained" color="primary">
-                <Button>One</Button>
-                <Button>Two</Button>
-            </ButtonGroup>
+            <div className="homepage-btns">
+                <Button variant="text" size="large" style={{background: '#669'}}>מגרש משחקים</Button>
+                <Button variant="outlined" size="large">איך זה עובד</Button>
+            </div>
         </Container>
     </>
     )

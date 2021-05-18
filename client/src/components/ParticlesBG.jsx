@@ -8,7 +8,7 @@ export default function ParticlesBG() {
     params={{
 	    "particles": {
 	        "number": {
-	            "value": 200
+	            "value": 120
 	        },
 	        "size": {
 	            "value": 5

@@ -85,20 +85,26 @@ export default function Translator() {
         if (!wrapp) return
         wrapp.innerHTML = ''
         const editor = document.createElement('div')
+        editor.classList.add('editor-container')
         wrapp.append(editor)
-        let q = new Quill(editor, {theme: "snow", modules: { toolbar: TOOLBAR_OPTIONS }})
+        let q = new Quill(editor, { theme: "snow", modules: { toolbar: TOOLBAR_OPTIONS }})
         q.disable()
         q.setText('טוען...')
         setQuill(q)
     },[])
     
     useEffect(() => {
-        if (!isActive || !quill || !finalTranscript || finalTranscript === '') return
+        if (!isActive || quill == null || !finalTranscript || finalTranscript === '') return
         resetTranscript()
-        quill.focus()
         let quillLength = quill.getLength() - 1
         quill.insertText(quillLength,`${finalTranscript} `)
+        quill.focus()
     },[isActive,quill,finalTranscript])
+
+    useEffect(() => {
+        if (quill == null || socket == null) return
+        quill.focus()
+    },[quill])
 
     useEffect(() => {
         if (!isActive) {
@@ -114,7 +120,7 @@ export default function Translator() {
     },[interimTranscript])
     
     return (
-        <div className="page">
+        <div className="page text-center bg-gif">
             <Paper elevation={3} className="controls">
                 <Grid 
                  container

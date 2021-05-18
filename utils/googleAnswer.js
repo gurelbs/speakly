@@ -27,17 +27,9 @@ const googleAnswer = async (term,lang) => {
             let calc = await page.$('#cwos')
             let weather = await page.$('#wob_wc')
             let songLyrics = await page.$('.kp-blk')
-            let topNews = await page.$('g-scrolling-carousel g-inner-card')
-            
-            // [...document.querySelectorAll("g-scrolling-carousel g-inner-card")].map(s => s.innerText).join(' ').split('\n').join(' ')
-            // document.querySelector("#tsuid11").innerText.split('\n').join(', ')
-            // document.querySelector("#kp-wp-tab-overview span").innerText
-            // foundElement = await page.waitForSelector('.xpdopen .kp-header div, #kp-wp-tab-overview span, #knowledge-currency__updatable-data-column, #tw-container #tw-target-text, g-card-section span, #cwos, #wob_wc');
-            // if (foundElement) {
-            if (topNews) {
-                await navigationPromise;
-                res = await page.evaluate(() => [...document.querySelectorAll("g-scrolling-carousel g-inner-card")].map(s => s.innerText).join(', ').split('\n').join(' '))
-            }
+            let topNews = await page.$('g-section-with-header')
+// document.querySelector("#_84qjYNvwBLCA9u8Ppe2psA011").innerText
+// [...document.querySelectorAll("g-inner-card > div > a")].map(el => el.innerText).join('')
             if (songLyrics) {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector(".kp-blk").innerText.split('\n').join(', ').replace('הצגת עוד',''))
@@ -88,15 +80,16 @@ const googleAnswer = async (term,lang) => {
                     return `מזג האוויר ב${loc}: ${temp}°, ${desc}. (${date}).`
                 })
             }
-            RENDER_CATCH.set(url, res)
-            await context.close(); 
-            return res || `לא הבנתי, אפשר לנסות שוב`
+            if (topNews) {
+                await navigationPromise;
+                res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
+            }
         } catch (e) {
-            RENDER_CATCH.set(url, res)
-            await context.close(); 
             console.log(e.message);
-            return res || `לא הבנתי, אפשר לנסות שוב`
         }
+        RENDER_CATCH.set(url, res)
+        await context.close(); 
+        return res || `לא הבנתי, אפשר לנסות שוב`
 }
 
 module.exports = googleAnswer

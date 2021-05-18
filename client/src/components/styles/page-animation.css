@@ -1,4 +1,4 @@
-.page{
+/* .page{
     height: auto;
     display: flex;
     flex-direction: column;
@@ -6,29 +6,32 @@
     justify-content: center;
     padding: 0;
     position: absolute;
-    width: 100%;
+    width: calc(100vw - 75px);
     min-height: calc(100vh - 64px);
-}
-.page-enter {
+    font-family: 'Heebo', sans-serif;
+    background: #333 url("https://i.pinimg.com/originals/1d/73/5a/1d735ad8eee8350adc96d50e1421ee6d.gif") no-repeat center center/cover;
+    color: white;
+} */
+/* .page-enter {
     opacity: 0;
-    transition: .3s ease-in-out;
+    transition: .15s ease-in-out;
     transform: translateY(100%);
 }
 .page-enter-active {
     opacity: 1;
     transform: translateY(0);
-    transition: .3s ease-in-out ;
+    transition:.15s ease-in-out ;
 }
 .page-exit {
     transform: translateY(100%);
-    transition: .3s ease-in-out ;
+    transition: .15s ease-in-out ;
     opacity: 1;
 }
 .page-exit-active {
     transform: translateY(0);
     opacity: 0;
-    transition: .3s ease-in-out ;
-}
+    transition: .15s ease-in-out ;
+} */
 .scroll{
     overflow: scroll;
 }

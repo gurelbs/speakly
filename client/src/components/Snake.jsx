@@ -3,7 +3,7 @@ import SnakeBoard from './SnakeBoard'
 
 export default function Snake() {
     return (
-        <div>
+        <div className="page bg-gif">
             <SnakeBoard/>
         </div>
     )

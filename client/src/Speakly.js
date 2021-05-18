@@ -12,15 +12,36 @@ import Playground from './components/Playground'
 import SignUpPage from './components/SignUpPage'
 import Login from './components/Login'
 // menu
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import FullMenu from './components/FullMenu'
 import './components/styles/page-animation.css'
 import { CSSTransition,TransitionGroup} from "react-transition-group";
-const theme = createMuiTheme({
-  direction: 'rtl', 
-});
-
+// auth
+import {AuthProvider} from './contexts/AuthContext'
 export default function Speakly() {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const theme = React.useMemo(() => createMuiTheme({
+      direction: 'rtl',
+      palette: {
+        type: prefersDarkMode ? 'dark' : 'light',
+        primary: {
+          light: '#757ce8',
+          main: '#3f50b5',
+          dark: '#002884',
+          contrastText: '#fff',
+        },
+        secondary: {
+          light: '#ff7961',
+          main: '#f44336',
+          dark: '#ba000d',
+          contrastText: '#000',
+        },
+      },
+    }),
+    [prefersDarkMode],
+  );
   const routes = [
     { path: '/signup', name: 'signup', Component: SignUpPage },
     { path: '/login', name: 'login', Component: Login },
@@ -47,6 +68,7 @@ export default function Speakly() {
   const classes = useStyles();
   
 return (
+  <AuthProvider>
   <ThemeProvider theme={theme}>
   <div className='App' dir="rtl">
     <Router>
@@ -58,7 +80,7 @@ return (
             <CSSTransition
                 key={location.key}
                 timeout={200}
-                classNames='page text-center d-flex justify-content-center bg-gif mx-auto'
+                classNames='page text-center bg-gif'
                 unmountOnExit 
             >
             <Switch location={location}>
@@ -81,6 +103,7 @@ return (
       </Router>
   </div>
   </ThemeProvider>
+  </AuthProvider>
 );
 }
 

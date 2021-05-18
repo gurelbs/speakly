@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { withRouter } from 'react-router-dom';
+import { withRouter,Link } from 'react-router-dom';
 // default
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -19,6 +19,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
+
 // custom
 import Logo from './Logo'
 import GamepadIcon from '@material-ui/icons/Gamepad';
@@ -30,6 +32,11 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+  },
+  navbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -87,6 +94,9 @@ const useStyles = makeStyles((theme) => ({
       width: theme.spacing(9) + 1,
     },
   },
+  loginBtn: {
+    color:'white',
+  }
 }));
 
 const FullMenu = (props) => {
@@ -114,7 +124,7 @@ const FullMenu = (props) => {
         onClick: () => history.push('/playground/transcriptor')
       },
       {
-        text: 'עוזר קולי', 
+        text: 'עוזרת קולית', 
         icon: <SettingsVoiceIcon/>,
         onClick: () => history.push('/playground/recognition')
       },
@@ -133,7 +143,7 @@ const FullMenu = (props) => {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar>
+        <Toolbar  className={classes.navbar}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -148,6 +158,7 @@ const FullMenu = (props) => {
           <Typography variant="h6" noWrap>
             <Logo/>
           </Typography>
+          <Button className={classes.loginBtn}><Link to="/login">התחברות</Link></Button>
         </Toolbar>
       </AppBar>
       <Drawer

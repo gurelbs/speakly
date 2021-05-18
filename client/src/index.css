@@ -4,19 +4,14 @@
   box-sizing: border-box;
   direction: rtl;
 }
+
+html {
+  font-family: 'Heebo', sans-serif;
+}
 body {
   direction: rtl;
   margin: 0;
-  font-family: 'Heebo', sans-serif;
   line-height:1;
-  /* font-family: 'Secular One', sans-serif; */
-}
-
-code, kbd, pre, samp {
-  font-family: var(--bs-font-monospace);
-  font-size: 1em;
-  direction: ltr !important;
-  unicode-bidi: bidi-override;
 }
 
 .snake-board{

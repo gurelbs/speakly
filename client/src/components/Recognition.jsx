@@ -197,7 +197,7 @@ const Recognition =  () => {
         else return speechSynthesis.resume()
     }, [soundOn])
 
-  return ( <div className="page">
+  return ( <div className="page bg-gif mx-auto">
         <CssBaseline />
         <Container fixed >
         <Grid container className={classes.root} style={{ minHeight: 'calc(100vh - 64px)', width: '100%'}}>

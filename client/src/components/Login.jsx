@@ -10,18 +10,18 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles,withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
+import './styles/login.css'
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+    <Typography variant="body2" color="yellow" align="center">
+      {' © '}
+      <Link color="inherit" href="https://speakly.cf/">
+        Speakly
       </Link>{' '}
       {new Date().getFullYear()}
-      {'.'}
     </Typography>
   );
 }
@@ -40,51 +40,62 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+    color:'white'
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  input:{
+    borderColor:theme.palette.secondary.light,
+  }
 }));
-
+const CssTextField = withStyles({
+  root: {
+    '& label': {
+      color:'gray'
+    },
+    '& input': {
+      color:'#eee'
+    },
+    '& label.Mui-focused': {
+      color:'#D3D3D3 '
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: 'aqua',
+      color:'white'
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'red',
+      },
+      '&:hover fieldset': {
+        borderColor: 'yellow',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'green',
+      },
+    },
+  },
+})(TextField);
 export default function SignIn() {
   const classes = useStyles();
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container className="page bg-gif mx-auto w-100 px-5 h-100 d-flex" component="main">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          התחברות
         </Typography>
         <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
+        <CssTextField type='text' fullWidth id="custom-css-standard-input" label="אימייל" />
+        <CssTextField type='password' fullWidth id="custom-css-standard-input" label="סיסמה" />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            label="זכור אותי"
           />
           <Button
             type="submit"
@@ -93,17 +104,21 @@ export default function SignIn() {
             color="primary"
             className={classes.submit}
           >
-            Sign In
+            כניסה
           </Button>
-          <Grid container>
+          <Grid xs={12}
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center">
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot password?
+                שכחת את הסיסמה?
               </Link>
             </Grid>
-            <Grid item>
+            <Grid item >
               <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {"עוד אין לך חשבון? לחיצה להרשמה"}
               </Link>
             </Grid>
           </Grid>
