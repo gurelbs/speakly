@@ -17,6 +17,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import PauseIcon from '@material-ui/icons/Pause';
+import ParticlesBG from './ParticlesBG';
+
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
