@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useRef,useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,7 +12,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import Alert from '@material-ui/lab/Alert';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
+// auth
+import {useAuth} from './../contexts/AuthContext'
 import './styles/login.css'
 function Copyright() {
   return (
@@ -32,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+  },
+  checkbox:{
+    color: 'white',
+    fill: 'white'
   },
   avatar: {
     margin: theme.spacing(1),
@@ -79,7 +86,40 @@ const CssTextField = withStyles({
 })(TextField);
 export default function SignIn() {
   const classes = useStyles();
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
+  const {signin} = useAuth()
+  
+  const [errorMsg, setErrorMsg] = useState()
+  const [loading, setLoading] = useState(false)
+  const history = useHistory()
+  async function handleSubmit(e){
+    let email = emailRef.current.value;
+    let password = passwordRef.current.value
+    e.preventDefault()
+    if (password.trim() === '' && email.trim() === ''){
+      return setErrorMsg('סיסמה ודואר אלקטרוני לא יכולים להיות שדות ריקים')
+    }
+    if (password.trim() === ''){
+      return setErrorMsg('לא הוזנה סיסמה')
+    }
+    if (password.length < 5){
+      return setErrorMsg('הסיסמה שבחרת חלשה מידי')
+    }
+    if (email.trim() === ''){
+      return setErrorMsg('לא הוזן דואר אלקטרוני')
+    }
+    try {
+      setErrorMsg('')
+      setLoading(true)
+      await signin(email,password)
+      history.push('/dashboard')
+    } catch (error) {
+      setErrorMsg('אופס... לא הצלחתי לאמת את החשבון. אבל אפשר לנסות שוב.')
+    }
+    setLoading(false)
+  }
   return (
     <Container className="page bg-gif mx-auto w-100 px-5 h-100 d-flex" component="main">
       <CssBaseline />
@@ -90,11 +130,12 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           התחברות
         </Typography>
-        <form className={classes.form} noValidate>
-        <CssTextField type='text' fullWidth id="custom-css-standard-input" label="אימייל" />
-        <CssTextField type='password' fullWidth id="custom-css-standard-input" label="סיסמה" />
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+        <form className={classes.form} onSubmit={handleSubmit}>
+        <CssTextField  inputRef={emailRef} type='text' fullWidth id="custom-css-standard-input" label="דואר אלקטרוני" />
+        <CssTextField inputRef={passwordRef} type='password' fullWidth id="custom-css-standard-input" label="סיסמה" />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={<Checkbox className={classes.checkbox} color="secondary" value="remember" />}
             label="זכור אותי"
           />
           <Button
@@ -116,10 +157,14 @@ export default function SignIn() {
                 שכחת את הסיסמה?
               </Link>
             </Grid>
-            <Grid item >
-              <Link href="#" variant="body2">
-                {"עוד אין לך חשבון? לחיצה להרשמה"}
+            <Grid item>
+            <p>עוד אין לך חשבון?
+            <Link  variant="body2">
+                <RouterLink className='px-2 text-warning' to="/signup" >
+                  הרשמה
+                </RouterLink>
               </Link>
+            </p>
             </Grid>
           </Grid>
         </form>

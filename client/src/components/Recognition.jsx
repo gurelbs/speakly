@@ -224,7 +224,7 @@ const Recognition =  () => {
                     {textAnswer}
                 </Typography>
             </Grid>
-            <Box xs={4} position="absolute" right={1} bottom={1}>
+            <Box style={{zIndex:'3'}} xs={4} position="absolute" right={5} bottom={5}>
                 <CheckBtn/>
             </Box>
         </Grid>

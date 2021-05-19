@@ -16,7 +16,7 @@ export default function HomePage() {
             <div className="hero">
             <div className='jumbotron d-block' style={{zIndex:'2', minWidth:'calc("100% - 64px")'}}>
                 <h1 className="wellcome-msg">
-                    <span>ספיקלי</span>
+                    <span>סְפּיקלִי</span>
                     <code className="wellcome-msg speakly-txt">Speakly.cf</code>
                 </h1>
             </div>

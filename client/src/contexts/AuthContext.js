@@ -1,25 +1,35 @@
 import React,{useContext,useState,useEffect} from 'react'
 import { auth } from './../firebase.js'
-const AutoContext = React.createContext()
+const AuthContext = React.createContext()
 export function useAuth(){
-    return useContext(AutoContext)
+    return useContext(AuthContext)
 }
 export function AuthProvider({children}) {
     const [currentUser, setCurrentUser] = useState()
-    function signUpUser(email,password){
-        return auth.createUserWithEmailAndPassword(email,password)
-    }
+    const [loading, setLoading] = useState(true)
+
+    const signup = (email,password) => auth.createUserWithEmailAndPassword(email,password);
+    const signin = (email,password) => auth.signInWithEmailAndPassword(email,password);
+    const logout = () => auth.signOut();
+
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => setCurrentUser(user))
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            setCurrentUser(user)
+            setLoading(false)
+        })
         return unsubscribe
     }, [])
+
     const value = {
         currentUser,
-        signUpUser
+        signup,
+        signin,
+        logout
     }
+    
     return (
-        <AutoContext.Provider value={value}>
-            {children}
-        </AutoContext.Provider>
+        <AuthContext.Provider value={value}>
+            {!loading && children}
+        </AuthContext.Provider>
     )
 }

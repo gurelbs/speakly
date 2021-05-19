@@ -8,18 +8,19 @@ import Recognition from './components/Recognition'
 import Snake from './components/Snake'
 import Transcriptor from './components/Transcriptor'
 import Playground from './components/Playground'
+import Dashboard from './components/Dashboard'
 // login - singup components
 import SignUpPage from './components/SignUpPage'
 import Login from './components/Login'
 // menu
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import FullMenu from './components/FullMenu'
 import './components/styles/page-animation.css'
 import { CSSTransition,TransitionGroup} from "react-transition-group";
 // auth
 import {AuthProvider} from './contexts/AuthContext'
+import PrivateRoute from './components/PrivateRoute'
 export default function Speakly() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = React.useMemo(() => createMuiTheme({
@@ -68,10 +69,10 @@ export default function Speakly() {
   const classes = useStyles();
   
 return (
-  <AuthProvider>
   <ThemeProvider theme={theme}>
   <div className='App' dir="rtl">
     <Router>
+    <AuthProvider>
       <FullMenu />
       <div className={classes.toolbar} />
       <Route render={({location}) => {
@@ -95,15 +96,16 @@ return (
                   <Route exact path={`/playground/transcriptor`}>
                     <Redirect to={`/playground/transcriptor/${uuid()}`} />
                   </Route>
+                  <PrivateRoute exact path='/dashboard' component={Dashboard}/>
                   <Route component={NotFound}/>
               </Switch>
               </CSSTransition> 
                 </TransitionGroup>)
       }}/>
+      </AuthProvider>
       </Router>
   </div>
   </ThemeProvider>
-  </AuthProvider>
 );
 }
 

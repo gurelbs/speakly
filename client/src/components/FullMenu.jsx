@@ -1,8 +1,8 @@
-import React from 'react';
+import React,{useState} from 'react';
 import clsx from 'clsx';
 import { withRouter,Link } from 'react-router-dom';
 // default
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -20,7 +20,6 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
-
 // custom
 import Logo from './Logo'
 import GamepadIcon from '@material-ui/icons/Gamepad';
@@ -28,6 +27,11 @@ import HomeIcon from '@material-ui/icons/Home';
 import SettingsVoiceIcon from '@material-ui/icons/SettingsVoice';
 import MessageIcon from '@material-ui/icons/Message';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
+// auth
+import {useHistory} from 'react-router-dom'
+
+import {useAuth} from './../contexts/AuthContext'
+
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -99,8 +103,20 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const FullMenu = (props) => {
-  const {history} = props
+const FullMenu = () => {
+  const {currentUser} = useAuth()
+  const [error, setError] = useState()
+  const history = useHistory()
+  const {logout} = useAuth()
+  const handleLogout = async () => {
+    try {
+        setError('')
+        await logout()
+        history.push('/login')
+    } catch (error) {
+        setError('אופס... לא הצלחתי להתנתק, אבל אפשר לנסות שוב.')
+    }
+}
   const [open, setOpen] = React.useState(false);
   const [toggleBtn, setToggleBtn] = React.useState(false);
   const handleDrawerOpen = () => setOpen(true);
@@ -158,7 +174,10 @@ const FullMenu = (props) => {
           <Typography variant="h6" noWrap>
             <Logo/>
           </Typography>
-          <Button className={classes.loginBtn}><Link to="/login">התחברות</Link></Button>
+          {currentUser && currentUser.email
+          ? <Button onClick={handleLogout} className={classes.loginBtn}><Link style={{textDecoration:'none',color:'white'}}>התנתקות</Link></Button>
+          : <Button className={classes.loginBtn}><Link style={{textDecoration:'none',color:'white'}} to="/login">כניסה</Link></Button>
+          }
         </Toolbar>
       </AppBar>
       <Drawer

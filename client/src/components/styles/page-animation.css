@@ -1,4 +1,4 @@
-/* .page{
+.page{
     height: auto;
     display: flex;
     flex-direction: column;
@@ -11,8 +11,8 @@
     font-family: 'Heebo', sans-serif;
     background: #333 url("https://i.pinimg.com/originals/1d/73/5a/1d735ad8eee8350adc96d50e1421ee6d.gif") no-repeat center center/cover;
     color: white;
-} */
-/* .page-enter {
+} 
+.page-enter {
     opacity: 0;
     transition: .15s ease-in-out;
     transform: translateY(100%);
@@ -31,7 +31,7 @@
     transform: translateY(0);
     opacity: 0;
     transition: .15s ease-in-out ;
-} */
+}
 .scroll{
     overflow: scroll;
 }

@@ -1,4 +1,4 @@
-import React,{useRef} from 'react';
+import React,{useRef,useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,11 +12,14 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Alert from '@material-ui/lab/Alert';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
 // auth
-import {useAuth} from '../contexts/AuthContext'
+import {useAuth} from './../contexts/AuthContext'
+
 function Copyright() {
   return (
-    <Typography variant="body2" color="yellow" align="center">
+    <Typography variant="body2" align="center">
       {' © '}
       <Link color="inherit" href="https://speakly.cf/">
         Speakly
@@ -55,7 +58,7 @@ const CssTextField = withStyles({
 })(TextField);
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(1),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -66,10 +69,14 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  checkbox:{
+    color: 'white',
+    fill: 'white'
   },
 }));
 
@@ -79,23 +86,42 @@ export default function SignUp() {
   const lastNameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const {signUpUser} = useAuth()
+  const passwordConfirmRef = useRef();
+  const history = useHistory()
 
-  function handleSubmit(e){
+  const {signup} = useAuth()
+
+  const [errorMsg, setErrorMsg] = useState()
+  const [loading, setLoading] = useState(false)
+  async function handleSubmit(e){
     e.preventDefault()
-    signUpUser(emailRef.current.value,passwordRef.current.value)
+    if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+      return setErrorMsg('סיסמה אינה תואמת')
+    }
+    console.log(emailRef.current.value,passwordRef.current.value);
+    try {
+      setErrorMsg('')
+      setLoading(true)
+      await signup(emailRef.current.value,passwordRef.current.value)
+      history.push('/dashboard')
+
+    } catch (error) {
+      setErrorMsg('אופס... לא הצלחתי ליצור את החשבון. אבל אפשר לנסות שוב.')
+    }
+    setLoading(false)
   }
   return (
-    <Container className="page bg-gif mx-auto w-100 px-0 mx-0 h-100 d-flex" component="main">
+    <Container className="page bg-gif mx-auto w-100 h-100 d-flex" component="main">
       <CssBaseline />
-      <div className={classes.paper}>
+      <div className={classes.paper} style={{maxWidth:'500px'}}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           הרשמה
         </Typography>
-        <form className={classes.form} noValidate>
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+        <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
             <CssTextField 
@@ -103,19 +129,18 @@ export default function SignUp() {
               autoFocus
               required
               type='text' 
-              id="custom-css-standard-input" 
-              label="שם פרטי" 
-              ref={firstNameRef}
+              id="firstNameRef" 
+              label="שם פרטי"
+              inputRef={firstNameRef}
             />
             </Grid>
             <Grid item xs={12} sm={6}>
             <CssTextField 
               fullWidth
-              required
               type='text' 
-              id="custom-css-standard-input" 
+              id="lastNameRef" 
               label="שם משפחה" 
-              ref={lastNameRef}
+              inputRef={lastNameRef}
             />
             </Grid>
             <Grid item xs={12}>
@@ -124,28 +149,42 @@ export default function SignUp() {
               fullWidth
               required
               type='text' 
-              id="custom-css-standard-input" 
+              id="emailRef" 
               label="דואר אלקטרוני"
-              ref={emailRef}
+              inputRef={emailRef}
             />
             </Grid>
             <Grid item xs={12}>
             <CssTextField 
               type='password' 
-              fullWidth 
-              id="custom-css-standard-input" 
+              fullWidth
+              required
+              id="passwordRef" 
               label="סיסמה"
-              ref={passwordRef}
+              autoComplete="true"
+              inputRef={passwordRef}
+            />
+            </Grid>
+            <Grid item xs={12}>
+            <CssTextField 
+              type='password' 
+              fullWidth
+              required 
+              id="passwordConfirmRef" 
+              autoComplete="true"
+              label="הזנת הסיסמה שנית"
+              inputRef={passwordConfirmRef}
             />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={<Checkbox className={classes.checkbox}value="allowExtraEmails" color="secondary" />}
                 label="אני רוצה לקבל עדכונים לכתובת המייל"
               />
             </Grid>
           </Grid>
           <Button
+            disabled={loading}
             type="submit"
             fullWidth
             variant="contained"
@@ -156,14 +195,17 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
                 כבר יש לך חשבון? 
+              <Link  variant="body2">
+                <RouterLink className='px-2 text-warning' to="/login" >
+                  כניסה
+                </RouterLink>
               </Link>
             </Grid>
           </Grid>
-        </form>
+        </form >
       </div>
-      <Box mt={5}>
+      <Box>
         <Copyright />
       </Box>
     </Container>
