@@ -82,7 +82,7 @@ const googleAnswer = async (term,lang) => {
         } catch (e) {
             RENDER_CATCH.set(url, res)
             console.log(e.message);
-            res || `לא הבנתי, אפשר לנסות שוב`
+            res = `לא הבנתי, אפשר לנסות שוב`
         }
         RENDER_CATCH.set(url, res)
         await context.close(); 
