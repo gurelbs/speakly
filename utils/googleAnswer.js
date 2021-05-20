@@ -4,13 +4,10 @@ const googleAnswer = async (term,lang) => {
     
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
-        let res = '';
+        let res;
         let foundElement;
         const browser = await puppeteer.launch({
-            args: [
-                '--no-sandbox',
-                `--lang=${lang}`
-            ],
+            args: ['--no-sandbox'],
             ignoreDefaultArgs: ['--disable-extensions'],
         });
         const context = await browser.createIncognitoBrowserContext() 
@@ -31,22 +28,11 @@ const googleAnswer = async (term,lang) => {
             if (songLyrics) {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector(".kp-blk").innerText.split('\n').join(', ').replace('הצגת עוד',''))
-            }
-            if (answerBox){
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
-                    .split('\n')
-                    .splice(0,2)
-                    .join(' ')
-                    .replace('ק״מ','קילומטר')
-                    .replace('קמ\"ר','קילומטר רבוע')
-                    .replace(/\([^)]*\)/g,'')
-                    .replace('/',': '))
-            }
+            } 
             if (wikiAnswer && !answerBox){
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("#kp-wp-tab-overview span").innerText)
-            }
+            } 
             if (currency){
                 await navigationPromise;
                 res = await page.evaluate(() => document
@@ -82,12 +68,27 @@ const googleAnswer = async (term,lang) => {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
             }
+            if (res == null && answerBox){
+                await navigationPromise;
+                res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
+                    .split('\n')
+                    .splice(0,2)
+                    .join(' ')
+                    .replace('ק״מ','קילומטר')
+                    .replace('קמ\"ר','קילומטר רבוע')
+                    .replace(/\([^)]*\)/g,'')
+                    .replace('/',': '))
+            } else {
+                res = `לא הבנתי, אפשר לנסות שוב`
+            }
         } catch (e) {
+            RENDER_CATCH.set(url, res)
             console.log(e.message);
+            res || `לא הבנתי, אפשר לנסות שוב`
         }
         RENDER_CATCH.set(url, res)
         await context.close(); 
-        return res || `לא הבנתי, אפשר לנסות שוב`
+        return res
 }
 
 module.exports = googleAnswer
