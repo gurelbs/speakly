@@ -5,7 +5,6 @@ const googleAnswer = async (term,lang) => {
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
         let res = '';
-        let foundElement;
         const browser = await puppeteer.launch({
             args: [
                 '--no-sandbox'
@@ -18,20 +17,22 @@ const googleAnswer = async (term,lang) => {
         await page.goto(url,{waitUntil: 'networkidle2'});
         try {
             await navigationPromise;
-            let answerBox = await page.$('.xpdopen .kp-header div')
+            let answerBox = await page.$('.xpdopen span')
             let wikiAnswer = await page.$('#kp-wp-tab-overview span')
             let currency = await page.$('#knowledge-currency__updatable-data-column > div')
             let translate = await page.$('#tw-container #tw-target-text')
             let finance = await page.$('g-card-section span')
             let calc = await page.$('#cwos')
+            // let calc2 = await page.$('.xpdopen')
+            // document.querySelector(".xpdopen").innerText.replace(/הצגת תוצאות על/g,'').split('\n').slice(1,2).join()
             let weather = await page.$('#wob_wc')
             let songLyrics = await page.$('.kp-blk')
-            let topNews = await page.$('g-section-with-header')
+            let topNews = await page.$('g-section-with-header') 
             if (songLyrics) {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector(".kp-blk").innerText.split('\n').join(', ').replace('הצגת עוד',''))
             } 
-            if (wikiAnswer && !answerBox){
+            if (wikiAnswer){
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("#kp-wp-tab-overview span").innerText)
             } 
@@ -70,16 +71,9 @@ const googleAnswer = async (term,lang) => {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
             }
-            if (answerBox && res === ''){
+            if (answerBox){
                 await navigationPromise;
-                res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
-                    .split('\n')
-                    .splice(0,2)
-                    .join(' ')
-                    .replace('ק״מ','קילומטר')
-                    .replace('קמ\"ר','קילומטר רבוע')
-                    .replace(/\([^)]*\)/g,'')
-                    .replace('/',': '))
+                res = await page.evaluate(() => document.querySelector(".xpdopen span").innerText)
             }
         } catch (e) {
             RENDER_CATCH.set(url, res)
