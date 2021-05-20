@@ -68,7 +68,7 @@ const googleAnswer = async (term,lang) => {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
             }
-            if (res == null && answerBox){
+            if (!res && answerBox){
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
                     .split('\n')
@@ -78,8 +78,6 @@ const googleAnswer = async (term,lang) => {
                     .replace('קמ\"ר','קילומטר רבוע')
                     .replace(/\([^)]*\)/g,'')
                     .replace('/',': '))
-            } else {
-                res = `לא הבנתי, אפשר לנסות שוב`
             }
         } catch (e) {
             RENDER_CATCH.set(url, res)
