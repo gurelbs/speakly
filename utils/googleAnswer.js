@@ -15,7 +15,7 @@ const googleAnswer = async (term,lang) => {
         });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
-        const navigationPromise = page.waitForNavigation();
+        const navigationPromise = page.waitForNavigation({timeout: 10000});
         await page.goto(url,{waitUntil: 'networkidle2'});
         try {
             await navigationPromise;

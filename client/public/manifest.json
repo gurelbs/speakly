@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Speakly",
+  "name": "Speakly.cf",
   "start_url": ".",
   "launch_path": "/index.html",
   "display": "standalone",
