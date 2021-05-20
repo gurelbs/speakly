@@ -71,10 +71,6 @@ const googleAnswer = async (term,lang) => {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
             }
-            if (answerBox){
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector(".xpdopen span").innerText)
-            }
         } catch (e) {
             RENDER_CATCH.set(url, res)
             console.log(e.message);

@@ -225,6 +225,29 @@ export default function Documentation() {
           </Typography>
         </AccordionDetails>
       </Accordion>
+      <Accordion expanded={expanded === 'panel10'} onChange={handleChange('panel10')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel10bh-content"
+          id="panel10bh-header"
+        >
+          <Typography className={classes.heading}>מילים לשירים</Typography>
+          <Typography className={classes.secondaryHeading}>
+          "מילים לשיר הפרח בגני"
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+           ניתן למצוא מילים לשירים באמצעות פקודה בפורמט: "מילים לשיר X"
+           <br />
+           לדוגמה:
+           <br />
+           "מילים לשיר crazy"
+           <br />
+           "מילים לשיר in the end"
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
         </div>
     </div>
   );
