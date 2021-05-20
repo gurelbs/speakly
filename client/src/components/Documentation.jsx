@@ -66,8 +66,8 @@ export default function Documentation() {
         </AccordionSummary>
         <AccordionDetails>
         <Typography>
-            ניתן לבקש מרותם להקריא את כותרות החדשות מהימים האחרונים על ידי הפקודה "חדשות" או "חדשות היום"
-        </Typography>
+            ניתן לבקש מרותם להקריא את כותרות החדשות מהימים האחרונים על ידי הפקודה "חדשות" 
+          </Typography>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
@@ -78,7 +78,7 @@ export default function Documentation() {
         >
           <Typography className={classes.heading}>המרת מטבעות</Typography>
           <Typography className={classes.secondaryHeading}>
-            "שלוש מאות חמישים שקל ללירה סטרלינג"
+            "שלוש מאות שקל לדולר"
           </Typography>
         </AccordionSummary>
         <AccordionDetails>

@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const RENDER_CATCH = new Map()
-process.setMaxListeners(Infinity);
 const googleAnswer = async (term,lang) => {
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
@@ -71,13 +70,14 @@ const googleAnswer = async (term,lang) => {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
             }
+            await context.close(); 
         } catch (e) {
             RENDER_CATCH.set(url, res)
+            await context.close(); 
             console.log(e.message);
             res = `לא הבנתי, אפשר לנסות שוב`
         }
         RENDER_CATCH.set(url, res)
-        await context.close(); 
         return res || `לא הבנתי, אפשר לנסות שוב`
 }
 
