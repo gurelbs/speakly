@@ -12,6 +12,7 @@ import Dashboard from './components/Dashboard'
 // login - singup components
 import SignUpPage from './components/SignUpPage'
 import Login from './components/Login'
+import ResetPassword from './components/ResetPassword'
 // menu
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
@@ -50,6 +51,7 @@ export default function Speakly() {
     { path: '/playground/snake', name: 'snake', Component: Snake },
     { path: '/playground/transcriptor/:id', name: 'translator', Component: Transcriptor },
     { path: '/playground', name: 'playground', Component: Playground },
+    { path: '/reset-password', name: 'resetPassword', Component: ResetPassword },
     { path: '/', name: 'homepage', Component: HomePage },
   ]
   const useStyles = makeStyles((theme) => ({

@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
-import {Link as RouterLink, useHistory} from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 // auth
 import {useAuth} from './../contexts/AuthContext'
 import './styles/login.css'
@@ -84,39 +84,29 @@ const CssTextField = withStyles({
     },
   },
 })(TextField);
-export default function SignIn() {
+
+export default function ResetPassword() {
   const classes = useStyles();
   const emailRef = useRef();
-  const passwordRef = useRef();
-
-  const {signin} = useAuth()
+  const {resetPassword} = useAuth()
   
   const [errorMsg, setErrorMsg] = useState()
+  const [msg, setMsg] = useState()
   const [loading, setLoading] = useState(false)
-  const history = useHistory()
   async function handleSubmit(e){
     let email = emailRef.current.value;
-    let password = passwordRef.current.value
     e.preventDefault()
-    if (password.trim() === '' && email.trim() === ''){
-      return setErrorMsg('סיסמה ודואר אלקטרוני לא יכולים להיות שדות ריקים')
-    }
-    if (password.trim() === ''){
-      return setErrorMsg('לא הוזנה סיסמה')
-    }
-    if (password.length < 5){
-      return setErrorMsg('הסיסמה שבחרת חלשה מידי')
-    }
     if (email.trim() === ''){
-      return setErrorMsg('לא הוזן דואר אלקטרוני') 
+      return setErrorMsg('דואר אלקטרוני לא תקין')
     }
     try {
+      setMsg('')
       setErrorMsg('')
       setLoading(true)
-      await signin(email,password)
-      history.push('/dashboard')
+      await resetPassword(email)
+      setMsg(`הודעה לאיפוס הסיסמה נשלחה ל ${email}`)
     } catch (error) {
-      setErrorMsg('אופס... לא הצלחתי לאמת את החשבון. אבל אפשר לנסות שוב.')
+      setErrorMsg('אופס... לא הצלחתי לשלוח לך הודעה לאיפוס הסיסמה. אבל אפשר לנסות שוב.')
     }
     setLoading(false)
   }
@@ -128,49 +118,25 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          התחברות
+          איפוס סיסמה
         </Typography>
         {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+        {msg && <Alert severity="success">{msg}</Alert>}
         <form className={classes.form} onSubmit={handleSubmit}>
         <CssTextField  inputRef={emailRef} type='text' fullWidth id="custom-css-standard-input" label="דואר אלקטרוני" />
-        <CssTextField inputRef={passwordRef} type='password' fullWidth id="custom-css-standard-input" label="סיסמה" />
-          <FormControlLabel
-            control={<Checkbox className={classes.checkbox} color="secondary" value="remember" />}
-            label="זכור אותי"
-          />
           <Button
+            disabled={loading}
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
           >
-            כניסה
+            אפס סיסמה
           </Button>
-          <Grid xs={12}
-          container
-          direction="row"
-          justify="space-between"
-          alignItems="center">
-            <Grid item>
-            <p>שכחת את הסיסמה?
-            <Link  variant="body2">
-                <RouterLink className='text-decoration-none px-2 text-warning' to="/reset-password" >
-                  איפוס סיסמה
-                </RouterLink>
-              </Link>
-            </p>
-            </Grid>
-            <Grid item>
-            <p>עוד אין לך חשבון?
-            <Link  variant="body2">
-                <RouterLink className='text-decoration-none px-2 text-warning' to="/signup" >
-                  הרשמה
-                </RouterLink>
-              </Link>
-            </p>
-            </Grid>
-          </Grid>
+            <Link className="text-center w-100 d-flex justify-content-center">
+                <RouterLink className='text-decoration-none text-warning' to='/'>חזור לדף הבית</RouterLink>
+            </Link>
         </form>
       </div>
       <Box mt={8}>

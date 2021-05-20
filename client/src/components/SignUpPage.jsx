@@ -88,7 +88,6 @@ export default function SignUp() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const history = useHistory()
-
   const {signup} = useAuth()
 
   const [errorMsg, setErrorMsg] = useState()
@@ -197,7 +196,7 @@ export default function SignUp() {
             <Grid item>
                 כבר יש לך חשבון? 
               <Link  variant="body2">
-                <RouterLink className='px-2 text-warning' to="/login" >
+                <RouterLink className='text-decoration-none px-2 text-warning' to="/login" >
                   כניסה
                 </RouterLink>
               </Link>

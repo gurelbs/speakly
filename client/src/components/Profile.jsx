@@ -1,83 +1,15 @@
-import React from 'react';
+import React,{useRef,useState} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
+import Alert from '@material-ui/lab/Alert';
+import Paper from '@material-ui/core/Paper';
 // auth
+import {Link as RouterLink, useHistory} from 'react-router-dom';
 import {useAuth} from './../contexts/AuthContext'
-import { Typography } from '@material-ui/core';
-
-function ConfirmationDialogRaw(props) {
-    const {currentUser} = useAuth()
-  const { onClose, value: valueProp, open, ...other } = props;
-  const [value, setValue] = React.useState(valueProp);
-  const radioGroupRef = React.useRef(null);
-
-  React.useEffect(() => {
-    if (!open) {
-      setValue(valueProp);
-    }
-  }, [valueProp, open]);
-
-  const handleEntering = () => {
-    if (radioGroupRef.current != null) {
-      radioGroupRef.current.focus();
-    }
-  };
-
-  const handleCancel = () => {
-    onClose();
-  };
-
-  const handleOk = () => {
-    onClose(value);
-  };
-
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
-
-  return (
-    <Dialog
-      disableBackdropClick
-      disableEscapeKeyDown
-      maxWidth="xs"
-      onEntering={handleEntering}
-      aria-labelledby="confirmation-dialog-title"
-      open={open}
-      {...other}
-    >
-      <DialogTitle id="confirmation-dialog-title">דואר אלקטרוני</DialogTitle>
-      <DialogContent dividers>
-      <Grid container>
-            <TextField style={{width:'100%'}} id="standard-basic" label="הזן דואר קלטרוני חדש" />
-      </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={handleCancel} color="primary">
-          ביטול
-        </Button>
-        <Button onClick={handleOk} variant="contained"  color="primary">
-          אישור
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
-ConfirmationDialogRaw.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  value: PropTypes.string.isRequired,
-};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,51 +24,58 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Profile() {
-  
-  const {currentUser} = useAuth()
-
+  const {updateEmail,updatePassword,currentUser} = useAuth()
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(currentUser?.email);
-  const handleClickListItem = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (newValue) => {
-    setOpen(false);
-
-    if (newValue) {
-      setValue(newValue);
+  const [errorMsg, setErrorMsg] = useState();
+  const [msg, setMsg] = useState();
+  const [loading, setLoading] = useState(false);
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const passwordConfirmRef = useRef();
+  function handleUpdate(e){
+    e.preventDefault()
+    let userEmail = emailRef?.current?.value
+    let userPassword = passwordRef?.current?.value
+    let userPasswordRepeat = passwordConfirmRef?.current?.value
+    if (userPassword !== userPasswordRepeat) return setErrorMsg('סיסמאות אינם תואמות')
+    const promises = [];
+    setErrorMsg('')
+    console.log(userEmail,userPassword,userPasswordRepeat);
+    if (userEmail !== currentUser.email) {
+      promises.push(updateEmail(userEmail))
     }
-  };
-
+    if (userPassword !== currentUser.password) {
+      promises.push(updatePassword(userPassword))
+    }
+    if (!promises.length === 0){
+      Promise.all(promises)
+      .then(() => setMsg('פרטים עודכנו בהצלחה!'))
+      .catch(() => setErrorMsg('אופס... לא הצלחתי לעדכן את החשבון. אבל אפשר לנסות שוב.'))
+      .finally(() => setLoading(false))
+    } else {
+      setErrorMsg('לא בוצע שינוי')
+    }
+  }
   return (
     <div className={classes.root}>
+      {currentUser.email && <Alert severity="info">הדואר האלקטרוני הנוכחי: {currentUser.email}</Alert>}
+      {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+      {msg && <Alert severity="success">{msg}</Alert>}
       <List component="div" role="list">
-        <ListItem button divider disabled role="listitem">
-          <ListItemText primary="הפרופיל שלך" />
-        </ListItem>
-        <ListItem
-          button
-          divider
-          aria-haspopup="true"
-          aria-controls="ringtone-menu"
-          aria-label="דואר אלקטרוני"
-          onClick={handleClickListItem}
-          role="listitem"
-        >
-          <ListItemText primary="דואר אלקטרוני" secondary={value} />
-        </ListItem>
-        <ConfirmationDialogRaw
-          classes={{
-            paper: classes.paper,
-          }}
-          id="ringtone-menu"
-          keepMounted
-          open={open}
-          onClose={handleClose}
-          value={value}
-        />
+        <ListItemText primary="עדכון הפרופיל" />
+        <Paper component="form" onSubmit={handleUpdate}>
+        <TextField inputRef={emailRef} style={{width:'100%'}} id="email" label="דואר אלקטרוני" />
+        <TextField type='password' inputRef={passwordRef} style={{width:'100%'}} id="password" label="הזנת סיסמה חדשה" />
+        <TextField type='password' inputRef={passwordConfirmRef} style={{width:'100%'}} id="repeat-password" label="הזנת סיסמה חדשה שנית" />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          className='mt-2'>
+        עדכון
+        </Button>
+        </Paper>
       </List>
     </div>
   );
