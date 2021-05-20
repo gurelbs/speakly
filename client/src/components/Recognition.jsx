@@ -218,6 +218,9 @@ const Recognition =  () => {
             <Box style={{zIndex:'3'}} xs={4} position="absolute" right={5} bottom={5}>
                 <CheckBtn/>
             </Box>
+            <Box style={{zIndex:'3'}} xs={4} position="absolute" style={{left:'50%'}} bottom={5}>
+ניתן לומר "רותם" כדי למחוק את הפלט הקיים או "טעינת הדף מחדש" כדי לרענן את העמוד
+            </Box>
         </Grid>
         </Container>
         </div>
