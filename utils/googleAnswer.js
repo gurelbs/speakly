@@ -15,8 +15,8 @@ const googleAnswer = async (term,lang) => {
         });
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
-        const navigationPromise = page.waitForNavigation({timeout: 10000});
-        await page.goto(url,{waitUntil: 'networkidle2'});
+        const navigationPromise = page.waitForNavigation();
+        await page.goto(url);
         try {
             await navigationPromise;
             let answerBox = await page.$('.xpdopen .kp-header div')
@@ -28,8 +28,6 @@ const googleAnswer = async (term,lang) => {
             let weather = await page.$('#wob_wc')
             let songLyrics = await page.$('.kp-blk')
             let topNews = await page.$('g-section-with-header')
-// document.querySelector("#_84qjYNvwBLCA9u8Ppe2psA011").innerText
-// [...document.querySelectorAll("g-inner-card > div > a")].map(el => el.innerText).join('')
             if (songLyrics) {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector(".kp-blk").innerText.split('\n').join(', ').replace('הצגת עוד',''))
