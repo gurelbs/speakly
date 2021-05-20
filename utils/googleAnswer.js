@@ -1,13 +1,15 @@
 const puppeteer = require('puppeteer');
 const RENDER_CATCH = new Map()
+process.setMaxListeners(Infinity);
 const googleAnswer = async (term,lang) => {
-    
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
-        let res;
+        let res = '';
         let foundElement;
         const browser = await puppeteer.launch({
-            args: ['--no-sandbox'],
+            args: [
+                '--no-sandbox'
+            ],
             ignoreDefaultArgs: ['--disable-extensions'],
         });
         const context = await browser.createIncognitoBrowserContext() 
@@ -68,7 +70,7 @@ const googleAnswer = async (term,lang) => {
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
             }
-            if (!res && answerBox){
+            if (answerBox && res === ''){
                 await navigationPromise;
                 res = await page.evaluate(() => document.querySelector(".xpdopen .kp-header div").innerText
                     .split('\n')
@@ -86,7 +88,7 @@ const googleAnswer = async (term,lang) => {
         }
         RENDER_CATCH.set(url, res)
         await context.close(); 
-        return res
+        return res || `לא הבנתי, אפשר לנסות שוב`
 }
 
 module.exports = googleAnswer

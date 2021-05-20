@@ -12,9 +12,8 @@ const findOrCreateDoc = require('./utils/findOrCreateDocument')
 const Document = require('./modules/Document')
 
 const io  = require("socket.io")(server,{
-    origins: '*:*',
     cors: {
-        origin: ['*:*'],
+        origins: ['*:*'],
         methods: ["GET", "POST"]
       }
 })
