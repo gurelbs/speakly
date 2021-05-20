@@ -16,7 +16,7 @@ const googleAnswer = async (term,lang) => {
         const context = await browser.createIncognitoBrowserContext() 
         const page = await context.newPage();
         const navigationPromise = page.waitForNavigation();
-        await page.goto(url);
+        await page.goto(url,{waitUntil: 'networkidle2'});
         try {
             await navigationPromise;
             let answerBox = await page.$('.xpdopen .kp-header div')
