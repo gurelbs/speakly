@@ -27,18 +27,17 @@
 .bg-gif{
     background: black url("https://i.pinimg.com/originals/1d/73/5a/1d735ad8eee8350adc96d50e1421ee6d.gif") no-repeat center center/cover;
     color: white;
+    min-height: auto;
     min-height: calc(100vh - 64px);
     display: flex;
     flex-direction: column;
-    position: fixed;
-    min-width: 100%;
+    position: relative;
     animation: gradient .5s ease-in-out;
     scroll-behavior: smooth;
     z-index: 1;
-    overflow: auto;
-    /* filter: blur(1px);
-    -webkit-filter: blur(1px); */
+    overflow: hidden;
 }
+
 .bg-gif::before{
     content: '';
     position: absolute;

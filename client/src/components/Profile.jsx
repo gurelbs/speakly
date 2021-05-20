@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Profile() {
-  const {updateEmail,updatePassword,currentUser} = useAuth()
+  const {updateEmail,updatePassword,currentUser,logout} = useAuth()
   const classes = useStyles();
   const [errorMsg, setErrorMsg] = useState();
   const [msg, setMsg] = useState();
@@ -33,29 +33,21 @@ export default function Profile() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
   const history = useHistory()
-  function handleUpdate(e){
+  async function handleUpdate(e){
     e.preventDefault()
-    let userEmail = emailRef?.current?.value
-    let userPassword = passwordRef?.current?.value
-    let userPasswordRepeat = passwordConfirmRef?.current?.value
+    let userEmail = emailRef.current.value
+    let userPassword = passwordRef.current.value
+    let userPasswordRepeat = passwordConfirmRef.current.value
     if (userPassword !== userPasswordRepeat) return setErrorMsg('סיסמאות אינם תואמות')
-    const promises = [];
-    setErrorMsg('')
-    console.log(userEmail,userPassword,userPasswordRepeat);
-    if (userEmail.trim() !== currentUser.email.trim()) {
-      promises.push(updateEmail(userEmail))
+    try {
+      setErrorMsg('')
+      if (userPassword !== currentUser.password) await updatePassword(userPassword)
+      if (userEmail !== currentUser.email) await updateEmail(userEmail)
+      await logout()
+    } catch (error) {
+      setErrorMsg('אופס... לא הצלחתי לעדכן את החשבון. אבל אפשר לנסות שוב.')
     }
-    if (userPassword !== currentUser.password) {
-      promises.push(updatePassword(userPassword))
-    }
-    if (!promises.length === 0){
-      Promise.all(promises)
-      .then(() => history.push('/login'))
-      .catch(() => setErrorMsg('אופס... לא הצלחתי לעדכן את החשבון. אבל אפשר לנסות שוב.'))
-      .finally(() => setLoading(false))
-    } else {
-      setErrorMsg('לא בוצע שינוי')
-    }
+    setLoading(false)
   }
   return (
     <div className={classes.root}>

@@ -6,6 +6,8 @@ import Container from '@material-ui/core/Container';
 import ParticlesBG from './ParticlesBG';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
+import {Link as RouterLink} from 'react-router-dom';
 export default function HomePage() {
     const [imageLoad, setImageLoad] = useState(false)
     useEffect(() => setImageLoad(true), [])
@@ -25,8 +27,12 @@ export default function HomePage() {
             </div>
             </div>
             <div className="homepage-btns">
-                <Button variant="text" size="large" style={{background: '#669'}}>מגרש משחקים</Button>
-                <Button variant="outlined" size="large">איך זה עובד</Button>
+                <Button variant="text" size="large" style={{background: '#669'}}>
+                    <RouterLink className="text-decoration-none text-light" to='/playground'>מגרש משחקים</RouterLink>
+                </Button>
+                <Button variant="outlined" size="large">
+                    <RouterLink className="text-decoration-none text-light" to='/documentation'>איך זה עובד</RouterLink>
+                </Button>
             </div>
         </Container>
     </>

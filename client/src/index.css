@@ -4,6 +4,7 @@
   box-sizing: border-box;
   direction: rtl;
 }
+
 .App{
   background-color: black;
   min-height: 100vh;

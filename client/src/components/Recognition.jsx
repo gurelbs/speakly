@@ -93,50 +93,41 @@ const Recognition =  () => {
         if (interimTranscript.includes('מחקי הכל')) return clear() + console.clear()
     }, [interimTranscript])
 
-    // useEffect( () => {
-    //     let startWithGoogle = 'חפשי בגוגל' || 'חפש בגוגל'
-    //     let startWithWiki = 'חפשי בויקיפדיה'||'חפש בויקיפדיה'
-    //     let startWithYoutube = 'חפשי ביוטיוב'||'חפש ביוטיוב'
-    //     let startWithRadio = 'פתח רדיו'||'פתחי רדיו'
-    //     let googleSearchIsValid = text?.startsWith(startWithGoogle) && final !== '';
-    //     let wikiSearchIsValid = text?.startsWith(startWithWiki) && final !== '';
-    //     let youtubeSearchIsValid = text?.startsWith(startWithYoutube)&& final !== '';
-    //     let radioSearchIsValid = text?.startsWith(startWithRadio)&& final !== '';
-    //     setIsBuildCmd(true)
-    //     if (googleSearchIsValid) {
-    //         setStartRecoBtn(false)
-    //         clear()
-    //         resetTranscript()
-    //         googleSearch(final) 
-    //         setStartRecoBtn(true)
-    //     } else if (wikiSearchIsValid){
-    //         setStartRecoBtn(false)
-    //         clear()
-    //         resetTranscript()
-    //         wikiSearch(final)
-    //         setStartRecoBtn(true)
-    //     } else if (youtubeSearchIsValid) {
-    //         setStartRecoBtn(false)
-    //         clear()
-    //         resetTranscript()
-    //         youtubeSearch(final)
-    //         setStartRecoBtn(true)
-    //     } else if (radioSearchIsValid) {
-    //         setStartRecoBtn(false)
-    //         clear()
-    //         resetTranscript()
-    //         playRadio()
-    //         setStartRecoBtn(true)
-    //     }
-    //     setIsBuildCmd(false)
-    // }, [final])
+    useEffect(() => {
+        if (finalTranscript.startsWith('חיפוש בגוגל')) {
+            SpeechRecognition.stopListening()
+            googleSearch(finalTranscript)
+            SpeechRecognition.startListening({continuous: true})
+        }
+    }, [finalTranscript])
+    useEffect(() => {
+        if (finalTranscript.startsWith('חיפוש ביוטיוב')) {
+            SpeechRecognition.stopListening()
+            youtubeSearch(finalTranscript)
+            SpeechRecognition.startListening({continuous: true})
+        }
+    }, [finalTranscript])
+    useEffect(() => {
+        if (finalTranscript.startsWith('חיפוש בויקיפדיה')) {
+            SpeechRecognition.stopListening()
+            wikiSearch(finalTranscript)
+            SpeechRecognition.startListening({continuous: true})
+        }
+    }, [finalTranscript])
+    useEffect(() => {
+        if (finalTranscript.startsWith('הפעלת רדיו')) {
+            SpeechRecognition.stopListening()
+            playRadio()
+            SpeechRecognition.startListening({continuous: true})
+        }
+    }, [finalTranscript])
+    
 
     useEffect(() => {
         let validator = final !== '' 
             && text !== '' 
             && final === text 
             && interim === '';
-        // if (isBuildCmd) return SpeechRecognition.abortListening()
         if (validator){
             resetTranscript()
             const fetchData = async () => {

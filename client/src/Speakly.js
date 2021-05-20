@@ -9,6 +9,7 @@ import Snake from './components/Snake'
 import Transcriptor from './components/Transcriptor'
 import Playground from './components/Playground'
 import Dashboard from './components/Dashboard'
+import Documentation from './components/Documentation'
 // login - singup components
 import SignUpPage from './components/SignUpPage'
 import Login from './components/Login'
@@ -52,6 +53,7 @@ export default function Speakly() {
     { path: '/playground/transcriptor/:id', name: 'translator', Component: Transcriptor },
     { path: '/playground', name: 'playground', Component: Playground },
     { path: '/reset-password', name: 'resetPassword', Component: ResetPassword },
+    { path: '/documentation', name: 'documentation', Component: Documentation },
     { path: '/', name: 'homepage', Component: HomePage },
   ]
   const useStyles = makeStyles((theme) => ({
