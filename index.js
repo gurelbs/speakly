@@ -12,8 +12,9 @@ const findOrCreateDoc = require('./utils/findOrCreateDocument')
 const Document = require('./modules/Document')
 
 const io  = require("socket.io")(server,{
+    origins: '*:*',
     cors: {
-        origin: ['http://localhost:3000','http://speakly.cf','https://speakly.cf','https://speakly.cf:*','https://speakly.cf/*' ],
+        origin: ['*:*'],
         methods: ["GET", "POST"]
       }
 })
