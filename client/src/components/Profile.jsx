@@ -32,6 +32,7 @@ export default function Profile() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
+  const history = useHistory()
   function handleUpdate(e){
     e.preventDefault()
     let userEmail = emailRef?.current?.value
@@ -41,7 +42,7 @@ export default function Profile() {
     const promises = [];
     setErrorMsg('')
     console.log(userEmail,userPassword,userPasswordRepeat);
-    if (userEmail !== currentUser.email) {
+    if (userEmail.trim() !== currentUser.email.trim()) {
       promises.push(updateEmail(userEmail))
     }
     if (userPassword !== currentUser.password) {
@@ -49,7 +50,7 @@ export default function Profile() {
     }
     if (!promises.length === 0){
       Promise.all(promises)
-      .then(() => setMsg('פרטים עודכנו בהצלחה!'))
+      .then(() => history.push('/login'))
       .catch(() => setErrorMsg('אופס... לא הצלחתי לעדכן את החשבון. אבל אפשר לנסות שוב.'))
       .finally(() => setLoading(false))
     } else {
