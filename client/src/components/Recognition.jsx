@@ -124,10 +124,10 @@ const Recognition =  () => {
     
 
     useEffect(() => {
-        let validator = final !== '' 
-            && text !== '' 
-            && final === text 
-            && interim === '';
+        let validator = finalTranscript !== '' 
+            && transcript !== '' 
+            && finalTranscript === transcript 
+            && interimTranscript === '';
         if (validator){
             resetTranscript()
             const fetchData = async () => {
@@ -209,7 +209,7 @@ const Recognition =  () => {
                 <CircularProgress color="inherit" />
                 </Backdrop>
                 <Typography variant="h5"  component="h2" style={{textAlign: 'center',marginTop:'5rem'}}>
-                    {interim}
+                    {interimTranscript}
                 </Typography>
                 <Typography variant="h3" component="h2" style={{textAlign: 'center',width:'80%',padding:'3rem'}}>
                     {textAnswer}

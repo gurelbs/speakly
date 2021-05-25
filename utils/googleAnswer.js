@@ -3,62 +3,52 @@ const RENDER_CATCH = new Map()
 const googleAnswer = async (term,lang) => {
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
-        let res = '';
+        let res;
         const browser = await puppeteer.launch({
-            args: [
-                '--no-sandbox'
-            ],
+            args: ['--no-sandbox'],
             ignoreDefaultArgs: ['--disable-extensions'],
         });
-        const context = await browser.createIncognitoBrowserContext() 
+        const context = await browser.createIncognitoBrowserContext() ;
         const page = await context.newPage();
-        const navigationPromise = page.waitForNavigation();
-        await page.goto(url,{waitUntil: 'networkidle2'});
+        await page.goto(url, {waitUntil:'domcontentloaded'});
         try {
-            await navigationPromise;
-            let answerBox = await page.$('.xpdopen span')
-            let wikiAnswer = await page.$('#kp-wp-tab-overview span')
-            let currency = await page.$('#knowledge-currency__updatable-data-column > div')
-            let translate = await page.$('#tw-container #tw-target-text')
-            let finance = await page.$('g-card-section span')
-            let calc = await page.$('#cwos')
-            // let calc2 = await page.$('.xpdopen')
-            // document.querySelector(".xpdopen").innerText.replace(/הצגת תוצאות על/g,'').split('\n').slice(1,2).join()
-            let weather = await page.$('#wob_wc')
-            let songLyrics = await page.$('.kp-blk')
+            let wikiAnswer = await page.$('#kp-wp-tab-overview');
+            let currency = await page.$('#knowledge-currency__updatable-data-column > div');
+            let translate = await page.$('#tw-container #tw-target-text');
+            let finance = await page.$('#rso g-card-section span');
+            let calc = await page.$('#cwos');
+            let weather = await page.$('#wob_wc');
+            let answerBox = await page.$('#rso .xpdopen div');
             let topNews = await page.$('g-section-with-header') 
-            if (songLyrics) {
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector(".kp-blk").innerText.split('\n').join(', ').replace('הצגת עוד',''))
-            } 
-            if (wikiAnswer){
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector("#kp-wp-tab-overview span").innerText)
+            // let songLyrics = await page.$('#tsuid11');
+            if (wikiAnswer && !finance && !answerBox){
+                await page.waitForSelector('#kp-wp-tab-overview',{visible: true})
+                return res = await page.evaluate(() => document.querySelector("#kp-wp-tab-overview span").innerText)
             } 
             if (currency){
-                await navigationPromise;
-                res = await page.evaluate(() => document
-                    .querySelector('#knowledge-currency__updatable-data-column > div').innerText
-                    .split('\n')
-                    .join(' ')
-                    .replace('שווה','שָׁוֶה')
-                    .replace('ביטקוין','בִּיטְקוֹיִיְן'))
+                await page.waitForSelector('#knowledge-currency__updatable-data-column',{visible: true,timeout:300})
+                return res = await page.evaluate(() => document
+                .querySelector('#knowledge-currency__updatable-data-column > div').innerText
+                .split('\n')
+                .join(' ')
+                .replace('שווה','שָׁוֶה')
+                .replace('ביטקוין','בִּיטְקוֹיְן'))
             }
             if (translate){
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector('#tw-container #tw-target-text').innerText)
+                await page.waitForSelector('#tw-container',{visible: true})
+                return res = await page.evaluate(() => document.querySelector('#tw-container #tw-target-text').innerText)
             }
             if (finance){
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector('g-card-section span').innerText)
+                await page.waitForSelector('#rso g-card-section',{visible: true})
+                return res = await page.evaluate(() => document.querySelector('g-card-section span').innerText)
             }
             if (calc){
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector('#cwos').innerText)
+                await page.waitForSelector('#cwos',{visible: true})
+                return res = await page.evaluate(() => document.querySelector('#cwos').innerText)
             }
             if (weather){
-                await navigationPromise;
-                res = await page.evaluate(() => {
+                await page.waitForSelector('#wob_wc',{visible: true})
+                return res = await page.evaluate(() => {
                     let temp = document.querySelector("#wob_tm").innerText
                     let loc = document.querySelector("#wob_loc").innerText
                     let date = document.querySelector("#wob_dts").innerText
@@ -66,18 +56,45 @@ const googleAnswer = async (term,lang) => {
                     return `מזג האוויר ב${loc}: ${temp}°, ${desc}. (${date}).`
                 })
             }
-            if (topNews) {
-                await navigationPromise;
-                res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
+            if (answerBox){
+                await page.waitForSelector('#rso .xpdopen div',{visible: true})
+                return res = await page.evaluate(() => document.querySelector("#rso .xpdopen div").innerText
+                    .split('\n')
+                    .slice(0,2)
+                    .join(': ')
+                    .replace(/\([^)]*\)|\[[^\]]*\]|\//g,' ')
+                    .trim()) 
             }
-            await context.close(); 
+            if (topNews) {
+                await page.waitForSelector('g-section-with-header',{visible: true})
+                return res = await page.evaluate(() => document.querySelector("g-section-with-header").innerText
+                    .split('\n')
+                    .join(', ')
+                )
+            } 
+            // if (answerBox) {
+            //     await page.waitForSelector('#rso .xpdopen div',{visible: true})
+            //     return res = await page.evaluate(() => document.querySelector("#rso .xpdopen div").innerText
+            //         .split('\n')
+            //         .join(', ')
+            //     )
+            // } 
+            // if (!wikiAnswer && answerBox){
+            //     await page.waitForSelector('.xpdopen',{visible: true,timeout:300})
+            //     res = await page.evaluate(() => document.querySelector(".xpdopen span").innerText)
+            // } 
+            // if (topNews) {
+            //     await page.waitForSelector('g-section-with-header',{visible: true,timeout:300})
+            //     res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
+            // }
         } catch (e) {
-            RENDER_CATCH.set(url, res)
-            await context.close(); 
-            console.log(e.message);
-            res = `לא הבנתי, אפשר לנסות שוב`
+            if (e instanceof puppeteer.errors.TimeoutError) {
+                console.log(e);
+                res = 'לא מצאתי משהו רלוונטי על ' + q
+            }
         }
         RENDER_CATCH.set(url, res)
+        await context.close(); 
         return res || `לא הבנתי, אפשר לנסות שוב`
 }
 
