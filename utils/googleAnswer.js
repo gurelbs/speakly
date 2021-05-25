@@ -13,8 +13,8 @@ const googleAnswer = async (term,lang) => {
         await page.goto(url, {waitUntil:'domcontentloaded'});
         try {
             let wikiAnswer = await page.$('#kp-wp-tab-overview');
-            let currency = await page.$('#knowledge-currency__updatable-data-column > div');
-            let translate = await page.$('#tw-container #tw-target-text');
+            let currency = await page.$('#knowledge-currency__updatable-data-column');
+            let translate = await page.$('#tw-container');
             let finance = await page.$('#rso g-card-section span');
             let calc = await page.$('#cwos');
             let weather = await page.$('#wob_wc');
@@ -89,8 +89,9 @@ const googleAnswer = async (term,lang) => {
             // }
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
-                console.log(e);
-                return res = 'לא מצאתי משהו רלוונטי על ' + q
+                res = 'לא מצאתי משהו רלוונטי על ' + q
+            } else {
+                res = `לא הבנתי, אפשר לנסות שוב`
             }
         }
         RENDER_CATCH.set(url, res)
