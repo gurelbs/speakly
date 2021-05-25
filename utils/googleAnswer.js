@@ -94,10 +94,16 @@ const googleAnswer = async (term,lang) => {
                 // return res
             }
         } catch (e) {
-            if (e instanceof puppeteer.errors.TimeoutError) {
-                res = 'לא מצאתי משהו רלוונטי על ' + q
-            } else {
-                res = `לא הבנתי, אפשר לנסות שוב`
+            try {
+                if (e instanceof puppeteer.errors.TimeoutError) {
+                    res = 'לא מצאתי משהו רלוונטי על ' + q
+                    await page.reload()
+                } else {
+                    res = `לא הבנתי, אפשר לנסות שוב`
+                }
+            } catch (error) {
+                await context.close();
+                return res || `לא הבנתי, אפשר לנסות שוב`
             }
         }
         RENDER_CATCH.set(url, res)
