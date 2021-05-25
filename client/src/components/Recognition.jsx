@@ -7,7 +7,6 @@ import CheckBtn from './CheckBtn'
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
@@ -16,8 +15,6 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
-import PauseIcon from '@material-ui/icons/Pause';
-import ParticlesBG from './ParticlesBG';
 
 const Recognition =  () => {
     const CancelToken = axios.CancelToken;
@@ -27,7 +24,7 @@ const Recognition =  () => {
     const [textAnswer, setTextAnswer] = useState('')
     const [startRecoBtn, setStartRecoBtn] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [isBuildCmd, setIsBuildCmd] = useState(false)
+    // const [isBuildCmd, setIsBuildCmd] = useState(false)
     const [soundOn, setSoundOn] = useState(false)
 
     const { transcript,interimTranscript,finalTranscript,resetTranscript} = useSpeechRecognition();

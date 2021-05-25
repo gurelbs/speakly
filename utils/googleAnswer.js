@@ -66,27 +66,9 @@ const googleAnswer = async (term,lang) => {
                     .trim()) 
             }
             if (topNews) {
-                await page.waitForSelector('g-section-with-header',{visible: true})
-                return res = await page.evaluate(() => document.querySelector("g-section-with-header").innerText
-                    .split('\n')
-                    .join(', ')
-                )
-            } 
-            // if (answerBox) {
-            //     await page.waitForSelector('#rso .xpdopen div',{visible: true})
-            //     return res = await page.evaluate(() => document.querySelector("#rso .xpdopen div").innerText
-            //         .split('\n')
-            //         .join(', ')
-            //     )
-            // } 
-            // if (!wikiAnswer && answerBox){
-            //     await page.waitForSelector('.xpdopen',{visible: true,timeout:300})
-            //     res = await page.evaluate(() => document.querySelector(".xpdopen span").innerText)
-            // } 
-            // if (topNews) {
-            //     await page.waitForSelector('g-section-with-header',{visible: true,timeout:300})
-            //     res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
-            // }
+                await page.waitForSelector('g-section-with-header',{visible: true,timeout:300})
+                res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
+            }
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
                 res = 'לא מצאתי משהו רלוונטי על ' + q
