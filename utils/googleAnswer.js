@@ -3,7 +3,7 @@ const RENDER_CATCH = new Map()
 const googleAnswer = async (term,lang) => {
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
-        let res;
+        let res = '';
         const browser = await puppeteer.launch({
             args: ['--no-sandbox'],
             ignoreDefaultArgs: ['--disable-extensions'],
@@ -90,7 +90,7 @@ const googleAnswer = async (term,lang) => {
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
                 console.log(e);
-                res = 'לא מצאתי משהו רלוונטי על ' + q
+                return res = 'לא מצאתי משהו רלוונטי על ' + q
             }
         }
         RENDER_CATCH.set(url, res)
