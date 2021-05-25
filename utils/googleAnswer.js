@@ -93,6 +93,7 @@ const googleAnswer = async (term,lang) => {
                 // }
                 // return res
             }
+            return res = 'לא מצאתי משהו רלוונטי על ' + q
         } catch (e) {
             try {
                 if (e instanceof puppeteer.errors.TimeoutError) {
