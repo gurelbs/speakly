@@ -3,7 +3,8 @@ const RENDER_CATCH = new Map()
 const googleAnswer = async (term,lang) => {
         const url = `https://google.com/search?q=${term}&hl=${lang}`
         if (RENDER_CATCH.has(url)) return RENDER_CATCH.get(url)
-        let res = '';
+        let res;
+        let err = `לא מצאתי משהו רלוונטי על ${term}`;
         const browser = await puppeteer.launch({
             args: ['--no-sandbox'],
             ignoreDefaultArgs: ['--disable-extensions'],
@@ -58,23 +59,38 @@ const googleAnswer = async (term,lang) => {
                 return res = await page.evaluate(() => document.querySelector('#knowledge-finance-wholepage__entity-summary span').innerText)
             }
             if (speedAnswer && validateAnswer){
+                let isGoogleFirstAnswerResult = await page.evaluate(() => document.querySelector("#rso div span a").innerText === 'מידע על תקצירי תוצאות חיפוש ראשונות')
                 await page.waitForSelector('#rso .xpdopen',{visible: true})
-                return res = await page.evaluate(() => document.querySelector("#rso .xpdopen").innerText
-                .split('\n')
-                .join(': ')
-                .trim()
-                .replace('\/',' - '))
+                console.log(isGoogleFirstAnswerResult)
+                if (isGoogleFirstAnswerResult){
+                    return res = await page.evaluate(() => document.querySelector("#rso .xpdopen").innerText
+                    .split('\n')
+                    .slice(2,3)
+                    .join(': ')
+                    .trim()
+                    .replace('\/',' - '))
+                } else {
+                    return res = await page.evaluate(() => document.querySelector("#rso .xpdopen").innerText
+                    .split('\n')
+                    .slice(0,2)
+                    .join(': ')
+                    .trim()
+                    .replace('\/',' - '))
+                }
+            }
+            if (!speedAnswer && !validateAnswer && wikiAnswer){
+                res = 'יואו אשכרה לא מצאתי כלום רלוונטי'
             }
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
-                res = 'לא מצאתי משהו רלוונטי על ' + q
+                return res = 'יש לי איזה באג משום מה'
             } else {
-                res = `לא הבנתי, אפשר לנסות שוב`
+                return  res = 'אין לי מושג מה הבעיה...'
             }
         }
         RENDER_CATCH.set(url, res)
         await context.close(); 
-        return res || `לא הבנתי, אפשר לנסות שוב`
+        return res || err
 }
 
 module.exports = googleAnswer
