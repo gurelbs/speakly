@@ -19,26 +19,8 @@ const googleAnswer = async (term,lang) => {
             let weather = await page.$('#wob_wc');
             let finance = await page.$('#knowledge-finance-wholepage__entity-summary');
             let speedAnswer = await page.$('#rso .xpdopen');
-            // document.querySelector("#rso > div:nth-child(2) > div > div.kp-blk.c2xzTb > div > div.ifM9O > div > div:nth-child(2) > div > span > span").innerText
-// document.querySelector("#rso .xpdopen").innerText.split('\n')
-
-            console.log({
-                'wikiAnswer': wikiAnswer,
-                'currency': currency,
-                'translate': translate,
-                'calc': calc,
-                'weather': weather,
-                'finance': finance,
-                'speedAnswer': speedAnswer,
-            });
-            // document.querySelector(".mnr-c").innerText.split('\n').slice(0,3).join(': ').split(' ').slice(0,2).join(' ').replace('\/',' - ')
-            // document.querySelector("#knowledge-finance-wholepage__entity-summary span").innerText
-            // document.querySelector(".xpdopen").innerText.split('\n').slice(0,document.querySelector(".xpdopen").innerText.split('\n').length-2).join(' ')
-            // let answerBox = await page.$('#rso .kp-blk');
-
-            // let topNews = await page.$('#rso g-section-with-header') 
-            // document.querySelector("#rso .kp-blk").innerText.split('\n')
             let validateAnswer = !(currency || translate || calc || weather || finance)
+
             if (wikiAnswer && validateAnswer && !speedAnswer){
                 await page.waitForSelector('#kp-wp-tab-overview',{visible: true})
                 return res = await page.evaluate(() => document.querySelector("#kp-wp-tab-overview span").innerText)
@@ -82,29 +64,12 @@ const googleAnswer = async (term,lang) => {
                 .join(': ')
                 .trim()
                 .replace('\/',' - '))
-                // let isGoogleFirstResult = [...document.querySelectorAll(".mnr-c a")].filter(el => el.innerText === 'מידע על תקצירי תוצאות חיפוש ראשונות').length > 0
-                // if (!isGoogleFirstResult){
-                // } else { ;       
-                //     await page.waitForSelector('.mnr-c',{visible: true})
-                //     res = await page.evaluate(() => document.querySelector(".mnr-c").innerText
-                //         .split('\n')
-                //         .slice(2,3)
-                //         .join(''))
-                // }
-                // return res
             }
-            return res = 'לא מצאתי משהו רלוונטי על ' + q
         } catch (e) {
-            try {
-                if (e instanceof puppeteer.errors.TimeoutError) {
-                    res = 'לא מצאתי משהו רלוונטי על ' + q
-                    await page.reload()
-                } else {
-                    res = `לא הבנתי, אפשר לנסות שוב`
-                }
-            } catch (error) {
-                await context.close();
-                return res || `לא הבנתי, אפשר לנסות שוב`
+            if (e instanceof puppeteer.errors.TimeoutError) {
+                res = 'לא מצאתי משהו רלוונטי על ' + q
+            } else {
+                res = `לא הבנתי, אפשר לנסות שוב`
             }
         }
         RENDER_CATCH.set(url, res)
@@ -113,3 +78,14 @@ const googleAnswer = async (term,lang) => {
 }
 
 module.exports = googleAnswer
+
+
+// console.log({
+//     'wikiAnswer': wikiAnswer,
+//     'currency': currency,
+//     'translate': translate,
+//     'calc': calc,
+//     'weather': weather,
+//     'finance': finance,
+//     'speedAnswer': speedAnswer,
+// });
