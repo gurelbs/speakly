@@ -15,13 +15,31 @@ const googleAnswer = async (term,lang) => {
             let wikiAnswer = await page.$('#kp-wp-tab-overview');
             let currency = await page.$('#knowledge-currency__updatable-data-column');
             let translate = await page.$('#tw-container');
-            let finance = await page.$('#rso g-card-section span');
             let calc = await page.$('#cwos');
             let weather = await page.$('#wob_wc');
-            let answerBox = await page.$('#rso .xpdopen div');
-            let topNews = await page.$('g-section-with-header') 
-            // let songLyrics = await page.$('#tsuid11');
-            if (wikiAnswer && !finance && !answerBox){
+            let finance = await page.$('#knowledge-finance-wholepage__entity-summary');
+            let speedAnswer = await page.$('#rso .xpdopen');
+            // document.querySelector("#rso > div:nth-child(2) > div > div.kp-blk.c2xzTb > div > div.ifM9O > div > div:nth-child(2) > div > span > span").innerText
+// document.querySelector("#rso .xpdopen").innerText.split('\n')
+
+            console.log({
+                'wikiAnswer': wikiAnswer,
+                'currency': currency,
+                'translate': translate,
+                'calc': calc,
+                'weather': weather,
+                'finance': finance,
+                'speedAnswer': speedAnswer,
+            });
+            // document.querySelector(".mnr-c").innerText.split('\n').slice(0,3).join(': ').split(' ').slice(0,2).join(' ').replace('\/',' - ')
+            // document.querySelector("#knowledge-finance-wholepage__entity-summary span").innerText
+            // document.querySelector(".xpdopen").innerText.split('\n').slice(0,document.querySelector(".xpdopen").innerText.split('\n').length-2).join(' ')
+            // let answerBox = await page.$('#rso .kp-blk');
+
+            // let topNews = await page.$('#rso g-section-with-header') 
+            // document.querySelector("#rso .kp-blk").innerText.split('\n')
+            let validateAnswer = !(currency || translate || calc || weather || finance)
+            if (wikiAnswer && validateAnswer && !speedAnswer){
                 await page.waitForSelector('#kp-wp-tab-overview',{visible: true})
                 return res = await page.evaluate(() => document.querySelector("#kp-wp-tab-overview span").innerText)
             } 
@@ -38,10 +56,6 @@ const googleAnswer = async (term,lang) => {
                 await page.waitForSelector('#tw-container',{visible: true})
                 return res = await page.evaluate(() => document.querySelector('#tw-container #tw-target-text').innerText)
             }
-            if (finance){
-                await page.waitForSelector('#rso g-card-section',{visible: true})
-                return res = await page.evaluate(() => document.querySelector('g-card-section span').innerText)
-            }
             if (calc){
                 await page.waitForSelector('#cwos',{visible: true})
                 return res = await page.evaluate(() => document.querySelector('#cwos').innerText)
@@ -55,19 +69,29 @@ const googleAnswer = async (term,lang) => {
                     let desc = document.querySelector('#wob_dc').innerText.replace('מעונן','מְעֻנָּן')
                     return `מזג האוויר ב${loc}: ${temp}°, ${desc}. (${date}).`
                 })
+                
             }
-            if (answerBox){
-                await page.waitForSelector('#rso .xpdopen div',{visible: true})
-                return res = await page.evaluate(() => document.querySelector("#rso .xpdopen div").innerText
-                    .split('\n')
-                    .slice(0,2)
-                    .join(': ')
-                    .replace(/\([^)]*\)|\[[^\]]*\]|\//g,' ')
-                    .trim()) 
+            if (finance){
+                await page.waitForSelector('#knowledge-finance-wholepage__entity-summary',{visible: true})
+                return res = await page.evaluate(() => document.querySelector('#knowledge-finance-wholepage__entity-summary span').innerText)
             }
-            if (topNews) {
-                await page.waitForSelector('g-section-with-header',{visible: true,timeout:300})
-                res = await page.evaluate(() => document.querySelector("g-section-with-header g-scrolling-carousel").innerText)
+            if (speedAnswer && validateAnswer){
+                await page.waitForSelector('#rso .xpdopen',{visible: true})
+                return res = await page.evaluate(() => document.querySelector("#rso .xpdopen").innerText
+                .split('\n')
+                .join(': ')
+                .trim()
+                .replace('\/',' - '))
+                // let isGoogleFirstResult = [...document.querySelectorAll(".mnr-c a")].filter(el => el.innerText === 'מידע על תקצירי תוצאות חיפוש ראשונות').length > 0
+                // if (!isGoogleFirstResult){
+                // } else { ;       
+                //     await page.waitForSelector('.mnr-c',{visible: true})
+                //     res = await page.evaluate(() => document.querySelector(".mnr-c").innerText
+                //         .split('\n')
+                //         .slice(2,3)
+                //         .join(''))
+                // }
+                // return res
             }
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
