@@ -120,6 +120,7 @@ const googleAnswer = async (term,lang) => {
                     .join(', '))
                 
             }
+            res += '\n-\n'
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
                 return res += 'יש לי איזה באג משום מה '
