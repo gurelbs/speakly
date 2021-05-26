@@ -10,7 +10,7 @@ router.post('/api/cmd', async (req, res) => {
         let answer = await googleAnswer(txt,lang)
         res.status(201).send({answer}).end()
     } catch (err) {
-        throw new Error(err.message)
+        console.log(err.message)
     }
 })
 

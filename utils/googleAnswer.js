@@ -120,7 +120,9 @@ const googleAnswer = async (term,lang) => {
                     .join(', '))
                 
             }
-            res += '\n-\n'
+            if (res == null){
+                res = 'לא מצאתי מידע על ' + term
+            }
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
                 return res += 'יש לי איזה באג משום מה '
