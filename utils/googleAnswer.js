@@ -122,7 +122,7 @@ const googleAnswer = async (term,lang) => {
             }
         } catch (e) {
             if (e instanceof puppeteer.errors.TimeoutError) {
-                return res += 'יש לי איזה באג משום מה'
+                return res += 'יש לי איזה באג משום מה '
             } else {
                 return  res += 'אין לי מושג מה הבעיה אבל לא מצאתי מידע על '+ term;
             }
