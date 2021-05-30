@@ -4,19 +4,19 @@
 
 > TODO:
 - backend
-    - [x] scrape the class="g obcontainer" insde google serach page with puppeteer
-    - [ ] 20 simple & useful buildin commands with auto callback
+    - [x] scrape the answer for the user term from google serach page using puppeteer
+    - [x] 20 simple & useful buildin commands with auto callback
 - pages
     - public 
-        - [ ] home page
+        - [x] home page
         - [ ] about page
-        - [ ] login / register page
-        - [ ] playground page
-            - [ ] pacmen game
-            - [ ] auto translator
-            - [ ] virtual assistant 
+        - [x] login / register page
+        - [x] playground page
+            - [x] snake game
+            - [x] auto translator
+            - [x] virtual assistant 
     - private
-        - [ ] user deshboard page
+        - [x] user deshboard page
         - [ ] user settings page
         - [ ] user custom commands page
         - [ ] user commands history
@@ -40,7 +40,7 @@
         -   מה מזג האוויר
         -   מה מזג האוויר השבוע
         -   מה מזג האוויר השבוע בשלישי
-    - [ ] חדשות
+    - [x] חדשות
     - [ ]  ספורט
         - X נגד Y
         - קריסטל פאלאס נגד מנצ'סטר סיטי
