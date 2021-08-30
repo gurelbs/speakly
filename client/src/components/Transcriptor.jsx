@@ -40,7 +40,7 @@ export default function Translator() {
     const [quill,setQuill] = useState()
     const [isActive,setIsActive] = useState(false)
     const {id: documentId} = useParams()
-    const ENDPOINT = "http://localhost:5000";
+    const ENDPOINT = process.env.NODE_ENV !== 'production' ? "http://localhost:5000" : 'https://speakly.cf'
     useEffect(() => {
         const s = io(ENDPOINT)
         setSocket(s)
