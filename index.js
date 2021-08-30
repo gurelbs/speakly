@@ -1,5 +1,5 @@
 require('dotenv').config();
-const mongooseConnect = require('./mongoose')
+const connectMongoose = require('./mongoose')
 const express = require('express');
 const cmd = require('./router/cmd');
 const app = express();
@@ -10,18 +10,13 @@ const http = require("http");
 const server = http.createServer(app);
 const findOrCreateDoc = require('./utils/findOrCreateDocument')
 const Document = require('./modules/Document')
+const serverOptions = { cors: { origins: ['*:*'],  methods: ["GET", "POST"] }}
+const io  = require("socket.io")(server,serverOptions)
 
-const io  = require("socket.io")(server,{
-    cors: {
-        origins: ['*:*'],
-        methods: ["GET", "POST"]
-      }
-})
-mongooseConnect()
+connectMongoose()
 app.use(cors())
 app.use(express.json())
 app.use(cmd)
-
 const port = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV === 'production'){
@@ -45,6 +40,7 @@ io.on("connection", socket => {
             console.log("Client disconnected");
           });
           socket.on("save-document", async data => {
+              if (!data) return 
               await Document.findByIdAndUpdate(documentId,{ data })
           })
         })
