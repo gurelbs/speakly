@@ -1,4 +1,5 @@
 require('dotenv').config();
+const mongooseConnect = require('./mongoose')
 const express = require('express');
 const cmd = require('./router/cmd');
 const app = express();
@@ -7,7 +8,6 @@ const { json } = require('express');
 const path = require('path');
 const http = require("http");
 const server = http.createServer(app);
-require('./mongoose')
 const findOrCreateDoc = require('./utils/findOrCreateDocument')
 const Document = require('./modules/Document')
 
@@ -17,7 +17,7 @@ const io  = require("socket.io")(server,{
         methods: ["GET", "POST"]
       }
 })
-
+mongooseConnect()
 app.use(cors())
 app.use(express.json())
 app.use(cmd)

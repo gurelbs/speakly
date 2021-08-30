@@ -24,7 +24,7 @@ const TOOLBAR_OPTIONS = [
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],       // header dropdown
     [{ 'color': [] }, { 'background': [] }],         // dropdown with defaults
     [{ 'font': [] }],                                // font family
-    [{ 'align': [] }],                               // text align
+    [{ 'align': 'right' }],                               // text align
     ['clean'],                                       // remove formatting
   ]
 export default function Translator() {
@@ -40,22 +40,23 @@ export default function Translator() {
     const [quill,setQuill] = useState()
     const [isActive,setIsActive] = useState(false)
     const {id: documentId} = useParams()
-    const ENDPOINT = process.env.NODE_ENV !== 'production' ? "http://localhost:5000" : 'https://speakly.cf'
+    const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://speakly.cf' : "http://localhost:5000"
     useEffect(() => {
+        console.log(ENDPOINT);
         const s = io(ENDPOINT)
         setSocket(s)
         return () => s.disconnect()
     },[])
 
     useEffect(() => {
-        if (quill == null || socket == null) return 
+        if (!quill || !socket) return 
         const handler = delta => quill.updateContents(delta)
         socket.on('receive-chenges',handler)
         return () => socket.off('receive-change',handler)
     },[quill,socket])
 
     useEffect(() => {
-        if (quill == null || socket == null) return
+        if (!quill || !socket) return 
         const handler = (delta, oldDelta, source) => {
             if (source !== 'user') return
             socket.emit("send-chenges",delta)
@@ -65,7 +66,7 @@ export default function Translator() {
     },[quill,socket])
 
     useEffect(() => {
-        if (quill == null || socket == null) return 
+        if (!quill || !socket) return 
         socket.once("load-document", document => {
             quill.setContents(document)
             quill.enable()
@@ -74,7 +75,7 @@ export default function Translator() {
     },[quill,socket,documentId])
 
     useEffect(() => {
-        if (quill == null || socket == null) return
+        if (!quill || !socket) return 
         const interval = setInterval(() => {
             socket.emit("save-document", quill.getContents())
         }, 2000);
@@ -102,7 +103,7 @@ export default function Translator() {
     },[isActive,quill,finalTranscript])
 
     useEffect(() => {
-        if (quill == null || socket == null) return
+        if (!quill || !socket) return 
         quill.focus()
     },[quill])
 
@@ -130,11 +131,11 @@ export default function Translator() {
                 <IconButton  className='mic-icon' onClick={() => setIsActive(btn => !btn)}>
                     {isActive ? <MicIcon style={{ color: '#ba68c8' }} fontSize="large"/> : <MicOffIcon fontSize="large"/>}
                 </IconButton>
-                    {isActive ? <p1 className="code-txt">זיהוי קולי פעיל</p1> : ''}
-                <p className="pre-txt">{interimTranscript}</p>
+                    {isActive ? <span className="code-txt">זיהוי קולי פעיל</span> : ''}
+                {interimTranscript}
                 </Grid>
             </Paper>
-            <div id="container" ref={textEditorRef}></div>
+            <div id="container" ref={textEditorRef}/>
         </div>
     )
 }
